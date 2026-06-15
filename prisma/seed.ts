@@ -1,8 +1,9 @@
 // Seed a realistic coding-agent run and finalize it into a signed receipt.
 // Run with: pnpm seed
 import { prisma } from "../apps/api/src/db.js";
-import { createPolicy } from "../apps/api/src/services/entities.js";
+import { createAttestation, createPolicy } from "../apps/api/src/services/entities.js";
 import { finalizeRun } from "../apps/api/src/services/finalize.js";
+import { sha256Hex } from "../packages/shared/src/hashing.js";
 
 async function clear(): Promise<void> {
   await prisma.riskFlag.deleteMany();
@@ -121,6 +122,25 @@ async function main(): Promise<void> {
       reason: "Reviewed diff and CI results; safe to merge.",
       approvedAt: t(195),
     },
+  });
+
+  await prisma.artifact.create({
+    data: {
+      runId: run.id,
+      eventId: mergeEventId,
+      artifactType: "DIFF",
+      uri: "github://acme/payments/pull/482.diff",
+      sha256: sha256Hex("diff --git a/pay.ts b/pay.ts\n+ retry logic"),
+      contentPreview: "diff --git a/pay.ts b/pay.ts\n@@ retry logic for failed charges @@",
+    },
+  });
+
+  await createAttestation({
+    runId: run.id,
+    attestationType: "POLICY_BINDING",
+    subject: "policy-compliance",
+    statement: "Run executed under Coding Agent Default Policy v1 with a recorded merge approval.",
+    evidenceRef: policy.policyHash,
   });
 
   const { receipt, riskLevel } = await finalizeRun(run.id, {

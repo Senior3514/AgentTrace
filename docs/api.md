@@ -81,6 +81,8 @@ exactly the previous `seqNo + 1`.
   ```
   Recomputes the run hash from current evidence and compares it to the sealed
   receipt. `hashValid` is `false` if any event was mutated after finalization.
+- `GET /v1/runs/:id/export` → complete, self-contained evidence bundle as a
+  downloadable JSON file: `{ exportedAt, run (full trail), receipt, verification }`.
 - `GET /health`
 
 ## Deterministic risk flags

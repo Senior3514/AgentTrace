@@ -106,6 +106,16 @@ export class AgentTraceClient {
     return this.get(`/v1/runs${toQuery(params)}`);
   }
 
+  /** Download the complete evidence bundle for a run (trail + receipt + verification). */
+  exportRun(runId: string): Promise<{
+    exportedAt: string;
+    run: Record<string, unknown>;
+    receipt: Receipt | null;
+    verification: unknown;
+  }> {
+    return this.get(`/v1/runs/${encodeURIComponent(runId)}/export`);
+  }
+
   listAgents(params: { limit?: number; offset?: number } = {}): Promise<{ items: Agent[]; total: number }> {
     return this.get(`/v1/agents${toQuery(params)}`);
   }

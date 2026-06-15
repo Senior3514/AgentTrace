@@ -259,6 +259,20 @@ describe("finalization", () => {
     expect(tampered.recomputedHash).not.toBe(tampered.sealedHash);
   });
 
+  it("exports a complete evidence bundle", async () => {
+    const { run } = await buildRunWithEvents();
+    await app.inject({ method: "POST", url: `/v1/runs/${run.id}/finalize`, headers: AUTH, payload: {} });
+
+    const res = await app.inject({ method: "GET", url: `/v1/runs/${run.id}/export` });
+    expect(res.statusCode).toBe(200);
+    expect(res.headers["content-disposition"]).toContain("attachment");
+    const bundle = res.json();
+    expect(bundle.run.id).toBe(run.id);
+    expect(bundle.run.events.length).toBeGreaterThan(0);
+    expect(bundle.receipt.runHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(bundle.verification.valid).toBe(true);
+  });
+
   it("serves a stable receipt from the receipt endpoint", async () => {
     const { run } = await buildRunWithEvents();
     const finalize = await app
