@@ -23,6 +23,10 @@ import {
 import { createRun } from "../services/runs.js";
 import { appendEvent } from "../services/events.js";
 import { finalizeRun } from "../services/finalize.js";
+import { createApiKey, listApiKeys, revokeApiKey } from "../services/api-keys.js";
+import { z } from "zod";
+
+const createApiKeySchema = z.object({ name: z.string().min(1).max(120) });
 
 /** All state-mutating endpoints. API key required. */
 export async function writeRoutes(app: FastifyInstance): Promise<void> {
@@ -73,4 +77,24 @@ export async function writeRoutes(app: FastifyInstance): Promise<void> {
     const result = await finalizeRun(req.params.id, input);
     return reply.code(200).send(result);
   });
+
+  // Mint a per-owner API key. Plaintext is returned exactly once.
+  app.post<{ Params: { id: string } }>("/owners/:id/api-keys", async (req, reply) => {
+    const { name } = parse(createApiKeySchema, req.body ?? {});
+    const key = await createApiKey(req.params.id, name);
+    return reply.code(201).send(key);
+  });
+
+  // List an owner's keys (metadata only; auth required). Usage audit via lastUsedAt.
+  app.get<{ Params: { id: string } }>("/owners/:id/api-keys", async (req) => {
+    return listApiKeys(req.params.id);
+  });
+
+  app.delete<{ Params: { id: string; keyId: string } }>(
+    "/owners/:id/api-keys/:keyId",
+    async (req, reply) => {
+      const result = await revokeApiKey(req.params.id, req.params.keyId);
+      return reply.code(200).send(result);
+    },
+  );
 }

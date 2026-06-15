@@ -1,6 +1,8 @@
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { ZodError } from "zod";
+import { config } from "./config.js";
 import { AppError } from "./lib/errors.js";
 import { readRoutes } from "./routes/read.js";
 import { writeRoutes } from "./routes/write.js";
@@ -17,6 +19,15 @@ export async function buildApp(opts: BuildOptions = {}): Promise<FastifyInstance
   });
 
   await app.register(cors, { origin: true });
+  await app.register(rateLimit, {
+    max: config.rateLimitMax,
+    timeWindow: config.rateLimitWindow,
+  });
+
+  // Request-scoped auth context, populated by the API-key pre-handler.
+  app.decorateRequest("ownerId", null);
+  app.decorateRequest("apiKeyId", null);
+  app.decorateRequest("authScope", null);
 
   app.setErrorHandler((error, _req, reply) => {
     if (error instanceof AppError) {

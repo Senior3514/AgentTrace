@@ -60,6 +60,23 @@ export class AgentTraceClient {
     return this.post("/v1/policies", args);
   }
 
+  // --- Per-owner API keys ---
+  /** Mint a per-owner API key. The returned `key` is shown only once. */
+  createApiKey(
+    ownerId: string,
+    name: string,
+  ): Promise<{ id: string; ownerId: string; name: string; prefix: string; key: string }> {
+    return this.post(`/v1/owners/${encodeURIComponent(ownerId)}/api-keys`, { name });
+  }
+
+  listApiKeys(ownerId: string): Promise<{ items: unknown[]; total: number }> {
+    return this.get(`/v1/owners/${encodeURIComponent(ownerId)}/api-keys`);
+  }
+
+  revokeApiKey(ownerId: string, keyId: string): Promise<{ id: string; revoked: boolean }> {
+    return this.request("DELETE", `/v1/owners/${encodeURIComponent(ownerId)}/api-keys/${encodeURIComponent(keyId)}`);
+  }
+
   // --- Runs / events ---
   startRun(args: StartRunArgs): Promise<Run> {
     return this.post("/v1/runs", serializeDates(args));

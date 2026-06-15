@@ -57,6 +57,58 @@ describe("auth", () => {
   });
 });
 
+describe("per-owner api keys", () => {
+  it("mints, authorizes with, lists, and revokes a key", async () => {
+    const owner = await app
+      .inject({ method: "POST", url: "/v1/owners", headers: AUTH, payload: { name: "Tenant A" } })
+      .then((r) => r.json());
+
+    // Mint a per-owner key (using the global admin key to bootstrap).
+    const minted = await app
+      .inject({
+        method: "POST",
+        url: `/v1/owners/${owner.id}/api-keys`,
+        headers: AUTH,
+        payload: { name: "ci-key" },
+      })
+      .then((r) => r.json());
+    expect(minted.key).toMatch(/^at_/);
+
+    const tenantAuth = { authorization: `Bearer ${minted.key}` };
+
+    // The per-owner key authorizes writes.
+    const agentRes = await app.inject({
+      method: "POST",
+      url: "/v1/agents",
+      headers: tenantAuth,
+      payload: { externalId: `tenant-agent-${Date.now()}`, name: "A", ownerId: owner.id },
+    });
+    expect(agentRes.statusCode).toBe(201);
+
+    // Listing shows usage (lastUsedAt set), secret never returned.
+    const list = await app
+      .inject({ method: "GET", url: `/v1/owners/${owner.id}/api-keys`, headers: AUTH })
+      .then((r) => r.json());
+    expect(list.total).toBe(1);
+    expect(list.items[0].lastUsedAt).toBeTruthy();
+    expect(list.items[0].keyHash).toBeUndefined();
+
+    // Revoke, then the key is rejected.
+    await app.inject({
+      method: "DELETE",
+      url: `/v1/owners/${owner.id}/api-keys/${minted.id}`,
+      headers: AUTH,
+    });
+    const afterRevoke = await app.inject({
+      method: "POST",
+      url: "/v1/agents",
+      headers: tenantAuth,
+      payload: { externalId: `tenant-agent2-${Date.now()}`, name: "B", ownerId: owner.id },
+    });
+    expect(afterRevoke.statusCode).toBe(401);
+  });
+});
+
 describe("agents", () => {
   it("creates an agent", async () => {
     const { agent } = await seedOwnerAgent();

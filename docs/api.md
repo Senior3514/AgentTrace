@@ -3,6 +3,15 @@
 Base URL: `http://localhost:4000`. JSON in/out. Writes require an API key via
 `Authorization: Bearer <key>` or `x-api-key: <key>`.
 
+Two key types are accepted:
+- **Global/admin keys** — configured via `API_KEYS` (bootstrap, not tenant-scoped).
+- **Per-owner keys** — minted via `POST /v1/owners/:id/api-keys`; the plaintext
+  is returned exactly once and only its SHA-256 hash is stored. Using one sets
+  the request's owner scope and updates the key's `lastUsedAt` (usage audit).
+
+All endpoints are rate-limited per client IP (`RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW`),
+and responses carry `x-ratelimit-*` headers.
+
 ## Errors
 
 ```json
@@ -65,6 +74,11 @@ exactly the previous `seqNo + 1`.
 ### POST /v1/runs/:id/finalize
 `{ status?: FINALIZED|FAILED|ABORTED, endedAt? }` →
 `{ receipt, riskLevel }`. Idempotency: a non-`RUNNING` run returns 409.
+
+### POST /v1/owners/:id/api-keys
+`{ name }` → `{ id, ownerId, name, prefix, key }`. The `key` plaintext is shown
+**once**. List with `GET /v1/owners/:id/api-keys` (metadata only, auth required);
+revoke with `DELETE /v1/owners/:id/api-keys/:keyId`.
 
 ## Read endpoints (no auth)
 
