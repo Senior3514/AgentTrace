@@ -101,5 +101,6 @@ export const RiskFlagType = {
   POLICY_MISSING: "policy_missing",
   AMBIGUOUS_TARGET: "ambiguous_target",
   ROLLBACK_UNAVAILABLE: "rollback_unavailable",
+  POLICY_VIOLATION: "policy_violation",
 } as const;
 export type RiskFlagType = (typeof RiskFlagType)[keyof typeof RiskFlagType];

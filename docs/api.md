@@ -26,7 +26,19 @@ Base URL: `http://localhost:4000`. JSON in/out. Writes require an API key via
 `{ externalId, name, ownerId, environment?, framework?, metadataJson? }`
 
 ### POST /v1/policies
-`{ ownerId, name, version?, policyText }` → stores a `policyHash`.
+`{ ownerId, name, version?, policyText, rules? }` → stores a `policyHash` that
+binds the text **and** the structured rules.
+
+`rules` is an optional, deterministic rule set (not a policy authoring system):
+```jsonc
+{
+  "denyActionClasses": ["SECRET_ACCESS"],        // any such event => CRITICAL violation
+  "requireApprovalFor": ["EXTERNAL_CALL"],       // mutating event of this class w/o approval => HIGH violation
+  "forbidIrreversibleWithoutApproval": true       // unapproved irreversible event => CRITICAL violation
+}
+```
+Evaluated at finalize; violations are recorded as `policy_violation` risk flags
+on the run (and therefore in the receipt) and roll up into `riskLevel`.
 
 ### POST /v1/runs
 `{ agentId, runExternalId?, parentRunId?, policyId?, startedAt? }`
@@ -75,4 +87,5 @@ exactly the previous `seqNo + 1`.
 
 Computed at finalize: `external_write`, `secret_access`, `code_execution`,
 `approval_missing`, `irreversible_action`, `policy_missing`, `ambiguous_target`,
-`rollback_unavailable`. See `packages/shared/src/risk.ts`.
+`rollback_unavailable`, and `policy_violation` (from bound policy rules). See
+`packages/shared/src/risk.ts` and `packages/shared/src/policy.ts`.

@@ -47,12 +47,15 @@ export async function createPolicy(input: CreatePolicyInput) {
   const owner = await prisma.owner.findUnique({ where: { id: input.ownerId } });
   if (!owner) throw notFound(`Owner ${input.ownerId} not found`);
 
-  // Policy hash binds the exact text + version, so receipts can prove which
-  // policy an action was evaluated against.
+  const rules = input.rules ?? {};
+
+  // Policy hash binds the exact text + version + structured rules, so receipts
+  // can prove which policy (and which rules) an action was evaluated against.
   const policyHash = hashCanonical({
     name: input.name,
     version: input.version,
     policyText: input.policyText,
+    rules,
   });
 
   return prisma.policy.create({
@@ -61,6 +64,7 @@ export async function createPolicy(input: CreatePolicyInput) {
       name: input.name,
       version: input.version,
       policyText: input.policyText,
+      rulesJson: rules as never,
       policyHash,
     },
   });

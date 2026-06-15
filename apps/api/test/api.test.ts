@@ -121,6 +121,55 @@ describe("runs and events", () => {
   });
 });
 
+describe("policy evaluation", () => {
+  it("surfaces a policy violation as a critical risk flag on finalize", async () => {
+    const owner = await app
+      .inject({ method: "POST", url: "/v1/owners", headers: AUTH, payload: { name: "Acme" } })
+      .then((r) => r.json());
+    const agent = await app
+      .inject({
+        method: "POST",
+        url: "/v1/agents",
+        headers: AUTH,
+        payload: { externalId: `agent-${Date.now()}-pol`, name: "Coder", ownerId: owner.id },
+      })
+      .then((r) => r.json());
+    const policy = await app
+      .inject({
+        method: "POST",
+        url: "/v1/policies",
+        headers: AUTH,
+        payload: {
+          ownerId: owner.id,
+          name: "No secrets",
+          policyText: "Secret access is denied.",
+          rules: { denyActionClasses: ["SECRET_ACCESS"] },
+        },
+      })
+      .then((r) => r.json());
+    const run = await app
+      .inject({ method: "POST", url: "/v1/runs", headers: AUTH, payload: { agentId: agent.id, policyId: policy.id } })
+      .then((r) => r.json());
+
+    await app.inject({
+      method: "POST",
+      url: "/v1/events",
+      headers: AUTH,
+      payload: { runId: run.id, seqNo: 0, eventType: "read_secret", actionClass: "SECRET_ACCESS", toolName: "vault" },
+    });
+
+    const finalize = await app
+      .inject({ method: "POST", url: `/v1/runs/${run.id}/finalize`, headers: AUTH, payload: {} })
+      .then((r) => r.json());
+    expect(finalize.riskLevel).toBe("CRITICAL");
+
+    const detail = await app.inject({ method: "GET", url: `/v1/runs/${run.id}` }).then((r) => r.json());
+    const violation = detail.riskFlags.find((f: { flagType: string }) => f.flagType === "policy_violation");
+    expect(violation).toBeTruthy();
+    expect(violation.severity).toBe("CRITICAL");
+  });
+});
+
 describe("finalization", () => {
   async function buildRunWithEvents() {
     const { agent } = await seedOwnerAgent();

@@ -133,6 +133,7 @@ model Policy {
   name       String
   version    String   @default("1")
   policyText String
+  rulesJson  Json     @default("{}")
   policyHash String
   createdAt  DateTime @default(now())
 

@@ -72,11 +72,18 @@ export interface CreateAgentArgs {
   metadataJson?: Record<string, unknown>;
 }
 
+export interface PolicyRulesInput {
+  denyActionClasses?: ActionClass[];
+  requireApprovalFor?: ActionClass[];
+  forbidIrreversibleWithoutApproval?: boolean;
+}
+
 export interface CreatePolicyArgs {
   ownerId: string;
   name: string;
   version?: string;
   policyText: string;
+  rules?: PolicyRulesInput;
 }
 
 export interface StartRunArgs {

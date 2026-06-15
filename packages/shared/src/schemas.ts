@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { policyRulesSchema } from "./policy.js";
 import {
   ActionClass,
   ActorType,
@@ -36,6 +37,7 @@ export const createPolicySchema = z.object({
   name: z.string().min(1).max(200),
   version: z.string().min(1).max(40).default("1"),
   policyText: z.string().min(1),
+  rules: policyRulesSchema.optional(),
 });
 export type CreatePolicyInput = z.infer<typeof createPolicySchema>;
 
