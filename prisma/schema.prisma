@@ -106,8 +106,25 @@ model Owner {
 
   agents   Agent[]
   policies Policy[]
+  apiKeys  ApiKey[]
 
   @@map("owners")
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  ownerId    String
+  name       String
+  prefix     String
+  keyHash    String    @unique
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@map("api_keys")
 }
 
 model Agent {

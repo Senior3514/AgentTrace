@@ -34,6 +34,8 @@ export interface AppConfig {
   apiKeys: string[];
   signingKey: string | undefined;
   publicKey: string | undefined;
+  rateLimitMax: number;
+  rateLimitWindow: string;
 }
 
 export function loadConfig(): AppConfig {
@@ -43,6 +45,8 @@ export function loadConfig(): AppConfig {
     apiKeys: parseKeys(process.env.API_KEYS ?? "dev_key_local"),
     signingKey: process.env.RECEIPT_SIGNING_KEY || undefined,
     publicKey: process.env.RECEIPT_PUBLIC_KEY || undefined,
+    rateLimitMax: Number(process.env.RATE_LIMIT_MAX ?? 1000),
+    rateLimitWindow: process.env.RATE_LIMIT_WINDOW ?? "1 minute",
   };
 }
 
