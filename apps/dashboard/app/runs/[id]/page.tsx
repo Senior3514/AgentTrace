@@ -35,6 +35,12 @@ export default async function RunDetailPage({ params }: { params: { id: string }
         subtitle={run.id}
         actions={
           <div className="flex items-center gap-2">
+            {run.receiptHash && (
+              <span className="inline-flex items-center gap-1 rounded border border-verified/40 bg-verified/10 px-2 py-1 text-2xs uppercase tracking-wide text-verified">
+                <span className="h-1.5 w-1.5 rounded-full bg-verified" />
+                Sealed
+              </span>
+            )}
             <ExportButton runId={run.id} />
             {run.receiptHash ? (
               <Link

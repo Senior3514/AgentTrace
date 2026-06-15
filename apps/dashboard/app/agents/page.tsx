@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ApiUnavailable, listAgents } from "../../lib/api";
 import { PageHeader, Table } from "../../components/ui";
+import { SummaryStrip } from "../../components/SummaryStrip";
 import { EmptyState, ErrorState } from "../../components/states";
 import { formatRelative } from "../../lib/format";
 
@@ -33,6 +34,15 @@ export default async function AgentsPage() {
           description="Register an agent via the API or run `pnpm seed` to load a sample agent."
         />
       ) : (
+        <>
+        <SummaryStrip
+          tiles={[
+            { label: "Agents", value: agents.length },
+            { label: "Environments", value: new Set(agents.map((a) => a.environment)).size, accent: "trace" },
+            { label: "Owners", value: new Set(agents.map((a) => a.owner?.id).filter(Boolean)).size, accent: "muted" },
+            { label: "Total runs", value: agents.reduce((n, a) => n + (a._count?.runs ?? 0), 0), accent: "verified" },
+          ]}
+        />
         <Table>
           <thead className="border-b border-border bg-surface-2/40">
             <tr>
@@ -67,6 +77,7 @@ export default async function AgentsPage() {
             ))}
           </tbody>
         </Table>
+        </>
       )}
     </>
   );
