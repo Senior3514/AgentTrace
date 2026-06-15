@@ -42,6 +42,10 @@ async function main(): Promise<void> {
     policyText:
       "External writes and irreversible actions require a human approval. " +
       "Secret access must be logged. Code execution is permitted in CI sandboxes.",
+    rules: {
+      requireApprovalFor: ["EXTERNAL_CALL"],
+      forbidIrreversibleWithoutApproval: true,
+    },
   });
 
   const startedAt = new Date(Date.now() - 1000 * 60 * 12);

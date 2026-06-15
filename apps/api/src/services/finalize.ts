@@ -2,6 +2,7 @@ import type { FinalizeRunInput } from "@agenttrace/shared";
 import {
   assessRisk,
   hashCanonical,
+  policyRulesSchema,
   RunStatus,
   verifySignature,
   type RiskEventInput,
@@ -60,7 +61,15 @@ export async function finalizeRun(
       metadataJson: (ev.metadataJson ?? {}) as Record<string, unknown>,
       hasApproval: approvedEventIds.has(ev.id),
     }));
-    const assessment = assessRisk({ hasPolicy: Boolean(run.policyId), events: riskEvents });
+    // Parse the bound policy's structured rules (tolerant of legacy/empty).
+    const policyRules = run.policy
+      ? policyRulesSchema.safeParse(run.policy.rulesJson)
+      : undefined;
+    const assessment = assessRisk({
+      hasPolicy: Boolean(run.policyId),
+      events: riskEvents,
+      policyRules: policyRules?.success ? policyRules.data : undefined,
+    });
 
     const seqToEventId = new Map(events.map((e) => [e.seqNo, e.id]));
 

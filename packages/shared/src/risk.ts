@@ -1,4 +1,5 @@
 import { ActionClass, RiskFlagType, RiskLevel, RiskSeverity } from "./enums.js";
+import { evaluatePolicy, type PolicyRules } from "./policy.js";
 
 // Minimal shapes the risk engine needs. Kept structural so they line up with
 // both Prisma rows and SDK payloads without a hard dependency on either.
@@ -17,6 +18,8 @@ export interface RiskEventInput {
 export interface RiskContextInput {
   hasPolicy: boolean;
   events: RiskEventInput[];
+  /** Structured policy rules to evaluate, when a policy is bound. */
+  policyRules?: PolicyRules;
 }
 
 export interface ComputedRiskFlag {
@@ -170,6 +173,12 @@ export function assessRisk(ctx: RiskContextInput): RiskAssessment {
         eventSeqNo: ev.seqNo,
       });
     }
+  }
+
+  // Bound-policy evaluation (deterministic). Violations join the flag set so
+  // they roll up into the overall risk level.
+  if (ctx.policyRules) {
+    flags.push(...evaluatePolicy(ctx.policyRules, ordered));
   }
 
   return { flags, riskLevel: rollupRiskLevel(flags) };
