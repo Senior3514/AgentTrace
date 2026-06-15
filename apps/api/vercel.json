@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "prisma generate --schema=../../prisma/schema.prisma",
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 15
+    }
+  }
+}

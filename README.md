@@ -76,6 +76,12 @@ The API container applies migrations on boot. Seed it with:
 docker compose exec api pnpm seed
 ```
 
+## Deploy (Vercel)
+
+The API (serverless) and dashboard deploy as two Vercel projects from this
+monorepo. See [`docs/deploy-vercel.md`](docs/deploy-vercel.md) for project
+settings, environment variables, and the hosted-Postgres requirement.
+
 ## Try the SDK
 
 ```bash

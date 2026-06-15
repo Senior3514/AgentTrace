@@ -1,0 +1,82 @@
+# Deploying AgentTrace to Vercel
+
+AgentTrace deploys as **two Vercel projects from this one monorepo**:
+
+| Project | Root Directory | What it is |
+| --- | --- | --- |
+| `agenttrace-api` | `apps/api` | Fastify API as a serverless function |
+| `agenttrace-dashboard` | `apps/dashboard` | Next.js dashboard |
+
+> Names are illustrative — rename the projects freely; only the env vars below
+> need to match up.
+
+## Prerequisites
+
+- A **hosted PostgreSQL** with connection pooling (serverless opens many short
+  connections). Neon, Supabase, or Vercel Postgres all work. Use the **pooled**
+  connection string as `DATABASE_URL`.
+- An Ed25519 signing key: run `pnpm keys:generate` and copy the hex values.
+
+## 1. API project (`apps/api`)
+
+Import the repo, set **Root Directory = `apps/api`**. `apps/api/vercel.json`
+already configures the function and the `prisma generate` build step, and
+rewrites every path to the Fastify handler in `apps/api/api/index.ts`.
+
+Environment variables:
+
+| Var | Required | Notes |
+| --- | --- | --- |
+| `DATABASE_URL` | ✅ | pooled Postgres connection string |
+| `RECEIPT_SIGNING_KEY` | ✅ | hex Ed25519 seed from `pnpm keys:generate` |
+| `RECEIPT_PUBLIC_KEY` | optional | derived from the signing key if omitted |
+| `API_KEYS` | ✅ | comma-separated global/admin keys |
+| `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW` | optional | defaults `1000` / `1 minute` |
+
+**Run migrations against the production database** before (or right after) the
+first deploy — serverless functions must not migrate on cold start:
+
+```bash
+DATABASE_URL="<pooled-or-direct-url>" pnpm prisma migrate deploy
+```
+
+(Prisma `binaryTargets` already include `rhel-openssl-3.0.x` for the Lambda
+runtime, so the client works once generated during the build.)
+
+### Deployment Protection
+
+A fresh Vercel project may return **HTTP 401/403** on every request because
+**Deployment Protection** (Vercel Authentication) is on by default. For a public
+API, turn it off under *Project → Settings → Deployment Protection*, or add a
+bypass token. This is why `https://<api>.vercel.app/` can show a 403 even when
+the function is healthy.
+
+Verify: `curl https://<api-project>.vercel.app/health` → `{"status":"ok",...}`.
+
+## 2. Dashboard project (`apps/dashboard`)
+
+Import the same repo as a second project, **Root Directory = `apps/dashboard`**
+(framework auto-detected as Next.js). The standalone Next config already traces
+the monorepo root.
+
+Environment variables — both point at the API deployment:
+
+| Var | Used by |
+| --- | --- |
+| `AGENTTRACE_API_URL` | server-side data fetching (SSR) |
+| `NEXT_PUBLIC_AGENTTRACE_API_URL` | client (export button, live API-status pill) |
+
+```
+AGENTTRACE_API_URL=https://<api-project>.vercel.app
+NEXT_PUBLIC_AGENTTRACE_API_URL=https://<api-project>.vercel.app
+```
+
+The header shows a live **API online/offline** pill so you can confirm the
+dashboard reaches the API across the two deployments.
+
+## Local parity
+
+`vercel dev` works per project, but the simplest local loop is unchanged:
+`docker compose up` (or `pnpm dev:api` + `pnpm dev:dashboard`). The serverless
+entry (`apps/api/api/index.ts`) just wraps the same `buildApp()` used in dev, so
+behavior is identical.

@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import { Wordmark } from "../components/Wordmark";
 import { NavLink } from "../components/NavLink";
+import { ApiStatus } from "../components/ApiStatus";
 
 export const metadata: Metadata = {
   title: "AgentTrace — execution evidence for AI agents",
@@ -32,12 +33,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <NavLink href="/agents">Agents</NavLink>
             </nav>
             <div className="ml-auto flex items-center gap-3 text-2xs uppercase tracking-wider text-muted">
-              <span className="hidden sm:inline">Execution Evidence Layer</span>
+              <span className="hidden lg:inline">Execution Evidence Layer</span>
+              <ApiStatus />
               <span className="rounded border border-border px-1.5 py-0.5">v0</span>
             </div>
           </div>
         </header>
-        <main className="mx-auto max-w-[1400px] px-5 py-6">{children}</main>
+        <main className="mx-auto min-h-[calc(100vh-6.5rem)] max-w-[1400px] px-5 py-6">
+          {children}
+        </main>
+        <footer className="mx-auto max-w-[1400px] px-5 py-4 text-2xs text-muted">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3">
+            <span>AgentTrace — execution evidence layer for AI agents</span>
+            <span className="hidden sm:inline">·</span>
+            <span>deterministic receipts · Ed25519 signatures · tamper-evident</span>
+          </div>
+        </footer>
       </body>
     </html>
   );
