@@ -118,3 +118,15 @@ export const getAgentRuns = (id: string) =>
 export const listRuns = () => apiGet<ListResult<RunRow>>("/v1/runs?limit=100");
 export const getRun = (id: string) => apiGet<RunDetail | null>(`/v1/runs/${id}`);
 export const getReceipt = (id: string) => apiGet<unknown>(`/v1/runs/${id}/receipt`);
+
+export interface RunVerification {
+  runId: string;
+  sealedHash: string;
+  recomputedHash: string;
+  hashValid: boolean;
+  signatureValid: boolean;
+  valid: boolean;
+}
+
+export const getRunVerification = (id: string) =>
+  apiGet<RunVerification | null>(`/v1/runs/${id}/receipt/verify`);
