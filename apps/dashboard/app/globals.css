@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #0a0d10;
+  color: #e8f0f7;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Thin, technical scrollbars to match the observability feel. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #26313b transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #26313b;
+  border-radius: 4px;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-md border border-border bg-surface;
+  }
+  .stat-label {
+    @apply text-2xs uppercase tracking-wider text-muted;
+  }
+  .mono {
+    @apply font-mono text-[13px];
+  }
+  .link {
+    @apply text-trace hover:underline underline-offset-2;
+  }
+  .th {
+    @apply px-3 py-2 text-left text-2xs font-medium uppercase tracking-wider text-muted;
+  }
+  .td {
+    @apply px-3 py-2 align-middle text-sm text-text;
+  }
+}

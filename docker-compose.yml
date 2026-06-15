@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: agenttrace-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agenttrace
+      POSTGRES_PASSWORD: agenttrace
+      POSTGRES_DB: agenttrace
+    ports:
+      - "5432:5432"
+    volumes:
+      - agenttrace_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agenttrace -d agenttrace"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: agenttrace-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://agenttrace:agenttrace@db:5432/agenttrace?schema=public"
+      API_HOST: "0.0.0.0"
+      API_PORT: "4000"
+      API_KEYS: "${API_KEYS:-dev_key_local}"
+      # Optional: set these (e.g. via `.env`) for stable receipt signatures.
+      # If omitted, the API generates an ephemeral key and warns.
+      RECEIPT_SIGNING_KEY: "${RECEIPT_SIGNING_KEY:-}"
+      RECEIPT_PUBLIC_KEY: "${RECEIPT_PUBLIC_KEY:-}"
+    ports:
+      - "4000:4000"
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+    container_name: agenttrace-dashboard
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      AGENTTRACE_API_URL: "http://api:4000"
+      NEXT_PUBLIC_AGENTTRACE_API_URL: "http://localhost:4000"
+    ports:
+      - "3000:3000"
+
+volumes:
+  agenttrace_pg:

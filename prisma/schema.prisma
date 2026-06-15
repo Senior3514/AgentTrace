@@ -1,0 +1,275 @@
+// AgentTrace — execution evidence layer for AI agents.
+// Schema models the evidence trail: owners → agents → runs → events,
+// with policy, approval, artifact, attestation and deterministic risk context.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+
+enum OwnerType {
+  ORG
+  TEAM
+  USER
+  SERVICE
+}
+
+enum RunStatus {
+  RUNNING
+  FINALIZED
+  FAILED
+  ABORTED
+}
+
+enum RiskLevel {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ActorType {
+  AGENT
+  HUMAN
+  SYSTEM
+  TOOL
+}
+
+enum ActionClass {
+  READ
+  WRITE
+  EXTERNAL_CALL
+  CODE_EXECUTION
+  SECRET_ACCESS
+  APPROVAL
+  CONTROL
+  OTHER
+}
+
+enum ApprovalDecision {
+  APPROVED
+  REJECTED
+  ESCALATED
+  EXPIRED
+}
+
+enum ApproverType {
+  HUMAN
+  POLICY
+  SYSTEM
+}
+
+enum RiskSeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ArtifactType {
+  FILE
+  DIFF
+  LOG
+  OUTPUT
+  SCREENSHOT
+  DATASET
+  OTHER
+}
+
+enum AttestationType {
+  RECEIPT
+  IDENTITY
+  POLICY_BINDING
+  CUSTOM
+}
+
+// ----------------------------------------------------------------------------
+// Models
+// ----------------------------------------------------------------------------
+
+model Owner {
+  id          String    @id @default(cuid())
+  type        OwnerType @default(ORG)
+  name        String
+  externalRef String?
+  createdAt   DateTime  @default(now())
+
+  agents   Agent[]
+  policies Policy[]
+
+  @@map("owners")
+}
+
+model Agent {
+  id           String   @id @default(cuid())
+  externalId   String   @unique
+  name         String
+  ownerId      String
+  environment  String   @default("production")
+  framework    String?
+  metadataJson Json     @default("{}")
+  createdAt    DateTime @default(now())
+
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  runs  Run[]
+
+  @@index([ownerId])
+  @@map("agents")
+}
+
+model Policy {
+  id         String   @id @default(cuid())
+  ownerId    String
+  name       String
+  version    String   @default("1")
+  policyText String
+  policyHash String
+  createdAt  DateTime @default(now())
+
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  runs  Run[]
+
+  @@unique([ownerId, name, version])
+  @@index([ownerId])
+  @@map("policies")
+}
+
+model Run {
+  id               String     @id @default(cuid())
+  agentId          String
+  runExternalId    String?
+  parentRunId      String?
+  policyId         String?
+  startedAt        DateTime   @default(now())
+  endedAt          DateTime?
+  status           RunStatus  @default(RUNNING)
+  riskLevel        RiskLevel?
+  receiptHash      String?
+  receiptSignature String?
+  createdAt        DateTime   @default(now())
+
+  agent     Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  policy    Policy? @relation(fields: [policyId], references: [id])
+  parentRun Run?   @relation("RunLineage", fields: [parentRunId], references: [id])
+  childRuns Run[]  @relation("RunLineage")
+
+  events       Event[]
+  approvals    Approval[]
+  artifacts    Artifact[]
+  attestations Attestation[]
+  riskFlags    RiskFlag[]
+
+  @@unique([agentId, runExternalId])
+  @@index([agentId])
+  @@index([status])
+  @@map("runs")
+}
+
+model Event {
+  id            String      @id @default(cuid())
+  runId         String
+  seqNo         Int
+  eventType     String
+  timestamp     DateTime    @default(now())
+  actorType     ActorType   @default(AGENT)
+  actorId       String?
+  toolName      String?
+  targetSystem  String?
+  actionClass   ActionClass @default(OTHER)
+  mutatesState  Boolean     @default(false)
+  irreversible  Boolean     @default(false)
+  inputHash     String?
+  outputHash    String?
+  prevEventHash String?
+  eventHash     String?
+  metadataJson  Json        @default("{}")
+  createdAt     DateTime    @default(now())
+
+  run       Run        @relation(fields: [runId], references: [id], onDelete: Cascade)
+  approvals Approval[]
+  artifacts Artifact[]
+  riskFlags RiskFlag[]
+
+  @@unique([runId, seqNo])
+  @@index([runId])
+  @@map("events")
+}
+
+model Approval {
+  id           String           @id @default(cuid())
+  runId        String
+  eventId      String?
+  approverType ApproverType     @default(HUMAN)
+  approverId   String
+  decision     ApprovalDecision
+  reason       String?
+  approvedAt   DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+
+  run   Run    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([runId])
+  @@map("approvals")
+}
+
+model Artifact {
+  id             String       @id @default(cuid())
+  runId          String
+  eventId        String?
+  artifactType   ArtifactType @default(OTHER)
+  uri            String
+  sha256         String
+  contentPreview String?
+  createdAt      DateTime     @default(now())
+
+  run   Run    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([runId])
+  @@map("artifacts")
+}
+
+model Attestation {
+  id              String          @id @default(cuid())
+  runId           String
+  attestationType AttestationType @default(CUSTOM)
+  subject         String
+  statement       String
+  evidenceRef     String?
+  signedBy        String
+  signature       String
+  createdAt       DateTime        @default(now())
+
+  run Run @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
+  @@map("attestations")
+}
+
+model RiskFlag {
+  id          String       @id @default(cuid())
+  runId       String
+  eventId     String?
+  flagType    String
+  severity    RiskSeverity @default(LOW)
+  title       String
+  description String
+  createdAt   DateTime     @default(now())
+
+  run   Run    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([runId])
+  @@map("risk_flags")
+}

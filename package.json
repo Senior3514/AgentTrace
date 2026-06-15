@@ -1,0 +1,35 @@
+{
+  "name": "agenttrace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AgentTrace — execution evidence layer for AI agents",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter ./packages/* build && pnpm -r --filter ./apps/* build",
+    "dev:api": "pnpm --filter @agenttrace/api dev",
+    "dev:dashboard": "pnpm --filter @agenttrace/dashboard dev",
+    "test": "pnpm --filter @agenttrace/api test",
+    "typecheck": "pnpm -r typecheck",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
+    "keys:generate": "tsx scripts/generate-keys.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma", "esbuild"]
+  }
+}
