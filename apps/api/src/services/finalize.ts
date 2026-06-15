@@ -10,6 +10,7 @@ import {
 import type { Receipt } from "@agenttrace/shared";
 import { prisma } from "../db.js";
 import { getKeystore } from "../crypto/keystore.js";
+import { getRunDetail } from "./runs.js";
 import { conflict, notFound } from "../lib/errors.js";
 import { buildReceipt, type RunBundle } from "../lib/receipt-engine.js";
 
@@ -227,4 +228,26 @@ export async function getRunVerification(runId: string): Promise<RunVerification
     signatureValid,
     valid: hashValid && signatureValid,
   };
+}
+
+/**
+ * Export the complete evidence bundle for a run: the full provenance trail
+ * (events, approvals, artifacts, attestations, risk flags) plus the signed
+ * receipt and its verification result for finalized runs. Self-contained and
+ * independently verifiable.
+ */
+export async function exportRunEvidence(runId: string): Promise<{
+  exportedAt: string;
+  run: Awaited<ReturnType<typeof getRunDetail>>;
+  receipt: Receipt | null;
+  verification: RunVerification | null;
+}> {
+  const run = await getRunDetail(runId);
+  let receipt: Receipt | null = null;
+  let verification: RunVerification | null = null;
+  if (run.status !== RunStatus.RUNNING && run.receiptHash) {
+    receipt = await getReceipt(runId);
+    verification = await getRunVerification(runId);
+  }
+  return { exportedAt: new Date().toISOString(), run, receipt, verification };
 }

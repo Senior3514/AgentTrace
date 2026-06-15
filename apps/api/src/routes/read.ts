@@ -4,7 +4,7 @@ import { prisma } from "../db.js";
 import { notFound } from "../lib/errors.js";
 import { parse } from "../lib/validate.js";
 import { getRunDetail, listRuns } from "../services/runs.js";
-import { getReceipt, getRunVerification } from "../services/finalize.js";
+import { exportRunEvidence, getReceipt, getRunVerification } from "../services/finalize.js";
 
 /** Read-only query endpoints. No API key required. */
 export async function readRoutes(app: FastifyInstance): Promise<void> {
@@ -61,5 +61,16 @@ export async function readRoutes(app: FastifyInstance): Promise<void> {
   // compare to the sealed receipt. Detects post-finalization tampering.
   app.get<{ Params: { id: string } }>("/runs/:id/receipt/verify", async (req) => {
     return getRunVerification(req.params.id);
+  });
+
+  // Complete, self-contained evidence bundle for a run (trail + receipt).
+  app.get<{ Params: { id: string } }>("/runs/:id/export", async (req, reply) => {
+    const bundle = await exportRunEvidence(req.params.id);
+    return reply
+      .header(
+        "content-disposition",
+        `attachment; filename="agenttrace-run-${req.params.id}.json"`,
+      )
+      .send(bundle);
   });
 }

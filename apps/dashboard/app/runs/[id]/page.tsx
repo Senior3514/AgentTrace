@@ -5,6 +5,7 @@ import { Breadcrumb, PageHeader, StatCard } from "../../../components/ui";
 import { RiskChip, StatusBadge } from "../../../components/badges";
 import { ErrorState } from "../../../components/states";
 import { RunTimeline } from "../../../components/RunTimeline";
+import { ExportButton } from "../../../components/ExportButton";
 import { formatDateTime, formatDuration, shortHash } from "../../../lib/format";
 
 export const dynamic = "force-dynamic";
@@ -33,14 +34,17 @@ export default async function RunDetailPage({ params }: { params: { id: string }
         title={run.runExternalId ?? "Run"}
         subtitle={run.id}
         actions={
-          run.receiptHash ? (
-            <Link
-              href={`/runs/${run.id}/receipt`}
-              className="rounded border border-verified/40 bg-verified/10 px-3 py-1.5 text-sm font-medium text-verified hover:bg-verified/20"
-            >
-              View receipt →
-            </Link>
-          ) : null
+          <div className="flex items-center gap-2">
+            <ExportButton runId={run.id} />
+            {run.receiptHash ? (
+              <Link
+                href={`/runs/${run.id}/receipt`}
+                className="rounded border border-verified/40 bg-verified/10 px-3 py-1.5 text-sm font-medium text-verified hover:bg-verified/20"
+              >
+                View receipt →
+              </Link>
+            ) : null}
+          </div>
         }
       />
 
@@ -104,6 +108,53 @@ export default async function RunDetailPage({ params }: { params: { id: string }
       )}
 
       <RunTimeline events={run.events} approvals={run.approvals} riskFlags={run.riskFlags} />
+
+      {(run.artifacts.length > 0 || run.attestations.length > 0) && (
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+          {run.artifacts.length > 0 && (
+            <div className="panel p-4">
+              <span className="stat-label">Artifacts · {run.artifacts.length}</span>
+              <ul className="mt-2 space-y-2">
+                {run.artifacts.map((a) => (
+                  <li key={a.id} className="border-t border-border pt-2 first:border-0 first:pt-0 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="mono text-text">{a.uri}</span>
+                      <span className="rounded bg-surface-2 px-1.5 py-0.5 text-2xs text-muted">
+                        {a.artifactType}
+                      </span>
+                    </div>
+                    <p className="mono break-all text-2xs text-muted">sha256:{a.sha256}</p>
+                    {a.contentPreview && (
+                      <p className="mt-1 line-clamp-2 text-2xs text-muted">{a.contentPreview}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {run.attestations.length > 0 && (
+            <div className="panel p-4">
+              <span className="stat-label">Attestations · {run.attestations.length}</span>
+              <ul className="mt-2 space-y-2">
+                {run.attestations.map((a) => (
+                  <li key={a.id} className="border-t border-border pt-2 first:border-0 first:pt-0 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-text">{a.subject}</span>
+                      <span className="rounded bg-surface-2 px-1.5 py-0.5 text-2xs text-muted">
+                        {a.attestationType}
+                      </span>
+                    </div>
+                    <p className="text-2xs text-muted">{a.statement}</p>
+                    <p className="mono break-all text-2xs text-verified">
+                      sig:{shortHash(a.signature, 24)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 }

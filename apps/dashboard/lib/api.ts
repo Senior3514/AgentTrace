@@ -85,6 +85,16 @@ export interface RiskFlagRow {
   description: string;
 }
 
+export interface ArtifactRow {
+  id: string;
+  eventId: string | null;
+  artifactType: string;
+  uri: string;
+  sha256: string;
+  contentPreview: string | null;
+  createdAt: string;
+}
+
 export interface AttestationRow {
   id: string;
   attestationType: string;
@@ -101,6 +111,7 @@ export interface RunDetail extends RunRow {
   events: EventRow[];
   approvals: ApprovalRow[];
   riskFlags: RiskFlagRow[];
+  artifacts: ArtifactRow[];
   attestations: AttestationRow[];
 }
 
