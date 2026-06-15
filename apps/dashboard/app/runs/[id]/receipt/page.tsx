@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { verifyReceipt, type Receipt } from "@agenttrace/shared";
-import { ApiUnavailable, getReceipt } from "../../../../lib/api";
+import { ApiUnavailable, getReceipt, getRunVerification } from "../../../../lib/api";
 import { Breadcrumb, PageHeader, StatCard } from "../../../../components/ui";
 import { RiskChip } from "../../../../components/badges";
 import { ErrorState } from "../../../../components/states";
@@ -29,6 +29,9 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
   if (!receipt) notFound();
 
   const verification = verifyReceipt(receipt);
+  // Server-side re-verification recomputes the hash from live evidence, so it
+  // also detects tampering of stored events (not just receipt-body integrity).
+  const liveVerification = await getRunVerification(params.id).catch(() => null);
   const { body } = receipt;
 
   return (
@@ -72,6 +75,42 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
           </p>
         </div>
       </div>
+
+      {/* Live re-verification against current evidence (tamper-evidence). */}
+      {liveVerification && (
+        <div className="mb-5 panel p-4">
+          <div className="flex items-center justify-between">
+            <span className="stat-label">Live re-verification</span>
+            <span
+              className={`text-2xs uppercase tracking-wide ${
+                liveVerification.hashValid ? "text-verified" : "text-critical"
+              }`}
+            >
+              {liveVerification.hashValid ? "✓ evidence intact" : "✕ tampering detected"}
+            </span>
+          </div>
+          <p className="mt-2 text-2xs text-muted">
+            Recomputed from the run&apos;s current events and compared to the sealed hash. A
+            mismatch means an event was altered after finalization.
+          </p>
+          <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+            <div>
+              <span className="stat-label">Sealed hash</span>
+              <p className="mono break-all text-2xs text-verified">{liveVerification.sealedHash}</p>
+            </div>
+            <div>
+              <span className="stat-label">Recomputed hash</span>
+              <p
+                className={`mono break-all text-2xs ${
+                  liveVerification.hashValid ? "text-muted" : "text-critical"
+                }`}
+              >
+                {liveVerification.recomputedHash}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard label="Events sealed" value={body.eventCount} />
