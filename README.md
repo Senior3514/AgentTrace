@@ -82,6 +82,12 @@ The API (serverless) and dashboard deploy as two Vercel projects from this
 monorepo. See [`docs/deploy-vercel.md`](docs/deploy-vercel.md) for project
 settings, environment variables, and the hosted-Postgres requirement.
 
+## Desktop app
+
+A native desktop shell (Electron) around the dashboard lives in
+[`apps/desktop`](apps/desktop/README.md). Point it at a local or deployed
+dashboard and launch with `pnpm --filter @agenttrace/desktop start`.
+
 ## Try the SDK
 
 ```bash
