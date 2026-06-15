@@ -1,0 +1,20 @@
+appId: ai.agenttrace.desktop
+productName: AgentTrace
+copyright: AgentTrace
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**/*
+  - package.json
+# App icons are optional; electron-builder falls back to defaults when the
+# build/ resources are absent. Drop icon.icns / icon.ico / icon.png into build/
+# to brand the packaged app.
+mac:
+  target: dmg
+  category: public.app-category.developer-tools
+win:
+  target: nsis
+linux:
+  target: AppImage
+  category: Development

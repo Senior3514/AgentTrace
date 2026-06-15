@@ -21,6 +21,10 @@ keys/
 npm-debug.log*
 pnpm-debug.log*
 
+# desktop build output
+apps/desktop/dist/
+apps/desktop/release/
+
 # os / editor
 .DS_Store
 .idea/
