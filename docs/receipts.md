@@ -51,6 +51,13 @@ import { verifyReceipt } from "@agenttrace/shared";
 const result = verifyReceipt(receipt); // { hashValid, signatureValid, valid }
 ```
 
+Or from the command line, with nothing but the receipt JSON:
+
+```bash
+pnpm verify:receipt receipt.json     # exit 0 = valid, 1 = invalid
+curl -s http://localhost:4000/v1/runs/<id>/receipt | pnpm verify:receipt -
+```
+
 The dashboard's receipt page performs this check server-side and shows the
 result, so the UI never has to trust the API's word.
 

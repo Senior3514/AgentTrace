@@ -83,6 +83,16 @@ AGENTTRACE_API_URL=http://localhost:4000 AGENTTRACE_API_KEY=dev_key_local \
   pnpm --filter @agenttrace/sdk demo
 ```
 
+## Verify a receipt offline
+
+No server, database, or private key required — just the receipt JSON:
+
+```bash
+curl -s http://localhost:4000/v1/runs/<id>/receipt > receipt.json
+pnpm verify:receipt receipt.json     # exit 0 = valid, 1 = invalid
+# or pipe it:  curl -s .../receipt | pnpm verify:receipt -
+```
+
 ## Test
 
 ```bash
