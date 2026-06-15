@@ -108,6 +108,13 @@ Writes require an API key (`Authorization: Bearer <key>` or `x-api-key`).
 
 Full reference: [`docs/api.md`](docs/api.md).
 
+## Docs
+
+- [`docs/architecture.md`](docs/architecture.md) — components, data model, lifecycle
+- [`docs/receipts.md`](docs/receipts.md) — determinism, signing, verification
+- [`docs/api.md`](docs/api.md) — endpoint reference
+- [`docs/security-checklist.md`](docs/security-checklist.md) — security baseline for agent integrations
+
 ## v0 boundaries
 
 **In:** ingestion API, provenance/event trail, receipt engine, deterministic
