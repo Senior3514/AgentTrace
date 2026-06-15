@@ -62,6 +62,13 @@ exactly the previous `seqNo + 1`.
 - `GET /v1/runs?limit=&offset=`
 - `GET /v1/runs/:id` → run with events, approvals, artifacts, attestations, riskFlags
 - `GET /v1/runs/:id/receipt` → signed receipt JSON (409 if not finalized)
+- `GET /v1/runs/:id/receipt/verify` → server-side verification (409 if not finalized):
+  ```json
+  { "runId": "...", "sealedHash": "...", "recomputedHash": "...",
+    "hashValid": true, "signatureValid": true, "valid": true }
+  ```
+  Recomputes the run hash from current evidence and compares it to the sealed
+  receipt. `hashValid` is `false` if any event was mutated after finalization.
 - `GET /health`
 
 ## Deterministic risk flags

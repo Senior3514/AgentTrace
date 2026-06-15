@@ -54,6 +54,22 @@ const result = verifyReceipt(receipt); // { hashValid, signatureValid, valid }
 The dashboard's receipt page performs this check server-side and shows the
 result, so the UI never has to trust the API's word.
 
+## Tamper-evidence
+
+`GET /v1/runs/:id/receipt/verify` (and `sdk.getReceiptVerification(runId)`)
+recomputes the run hash from the **current** persisted events and compares it to
+the hash sealed at finalize time:
+
+```json
+{ "sealedHash": "…", "recomputedHash": "…", "hashValid": true,
+  "signatureValid": true, "valid": true }
+```
+
+If any event is mutated after finalization, the recomputed hash diverges from
+the seal and `hashValid` becomes `false`. This is covered by an integration test
+that edits a sealed event directly in the database and asserts verification
+fails.
+
 ## Keys
 
 Generate a stable keypair with `pnpm keys:generate` and set
