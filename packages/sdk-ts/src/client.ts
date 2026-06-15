@@ -90,6 +90,18 @@ export class AgentTraceClient {
     return this.get(`/v1/runs/${encodeURIComponent(runId)}/receipt`);
   }
 
+  /** Ask the server to recompute and verify a finalized run's evidence. */
+  getReceiptVerification(runId: string): Promise<{
+    runId: string;
+    sealedHash: string;
+    recomputedHash: string;
+    hashValid: boolean;
+    signatureValid: boolean;
+    valid: boolean;
+  }> {
+    return this.get(`/v1/runs/${encodeURIComponent(runId)}/receipt/verify`);
+  }
+
   listRuns(params: { limit?: number; offset?: number } = {}): Promise<{ items: Run[]; total: number }> {
     return this.get(`/v1/runs${toQuery(params)}`);
   }

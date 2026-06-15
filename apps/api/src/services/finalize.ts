@@ -1,5 +1,11 @@
 import type { FinalizeRunInput } from "@agenttrace/shared";
-import { assessRisk, RunStatus, type RiskEventInput } from "@agenttrace/shared";
+import {
+  assessRisk,
+  hashCanonical,
+  RunStatus,
+  verifySignature,
+  type RiskEventInput,
+} from "@agenttrace/shared";
 import type { Receipt } from "@agenttrace/shared";
 import { prisma } from "../db.js";
 import { getKeystore } from "../crypto/keystore.js";
@@ -150,5 +156,66 @@ export async function getReceipt(runId: string): Promise<Receipt> {
     ...receipt,
     runHash: run.receiptHash,
     signature: run.receiptSignature ?? receipt.signature,
+  };
+}
+
+export interface RunVerification {
+  runId: string;
+  /** Run hash sealed at finalize time. */
+  sealedHash: string;
+  /** Run hash recomputed from the current persisted events. */
+  recomputedHash: string;
+  /** True when the recomputed hash matches the sealed hash (no tampering). */
+  hashValid: boolean;
+  /** True when the sealed signature verifies against the sealed hash. */
+  signatureValid: boolean;
+  /** True only when both checks pass. */
+  valid: boolean;
+}
+
+/**
+ * Verify a finalized run's evidence server-side.
+ *
+ * Recomputes the canonical run hash from the *current* persisted events and
+ * compares it to the hash sealed at finalize time. If any event was mutated
+ * after finalization, the recomputed hash diverges and `hashValid` is false —
+ * this is the tamper-evidence guarantee. The Ed25519 signature is also checked
+ * against the sealed hash.
+ */
+export async function getRunVerification(runId: string): Promise<RunVerification> {
+  const { privateKeyHex, publicKeyHex } = getKeystore();
+  const run = await prisma.run.findUnique({
+    where: { id: runId },
+    include: { agent: true, policy: true },
+  });
+  if (!run) throw notFound(`Run ${runId} not found`);
+  if (run.status === RunStatus.RUNNING || !run.receiptHash) {
+    throw conflict(`Run ${runId} is not finalized; nothing to verify`);
+  }
+
+  const events = await prisma.event.findMany({ where: { runId }, orderBy: { seqNo: "asc" } });
+  const approvals = await prisma.approval.findMany({ where: { runId } });
+  const riskFlags = await prisma.riskFlag.findMany({ where: { runId } });
+
+  const { receipt } = buildReceipt(
+    { run, agent: run.agent, policy: run.policy, events, approvals, riskFlags },
+    privateKeyHex,
+    publicKeyHex,
+  );
+
+  const recomputedHash = hashCanonical(receipt.body);
+  const sealedHash = run.receiptHash;
+  const hashValid = recomputedHash === sealedHash;
+  const signatureValid = run.receiptSignature
+    ? verifySignature(sealedHash, run.receiptSignature, publicKeyHex)
+    : false;
+
+  return {
+    runId,
+    sealedHash,
+    recomputedHash,
+    hashValid,
+    signatureValid,
+    valid: hashValid && signatureValid,
   };
 }

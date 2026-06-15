@@ -183,6 +183,33 @@ describe("finalization", () => {
     expect(res.statusCode).toBe(409);
   });
 
+  it("verifies a finalized run and detects post-finalization tampering", async () => {
+    const { run } = await buildRunWithEvents();
+    await app.inject({ method: "POST", url: `/v1/runs/${run.id}/finalize`, headers: AUTH, payload: {} });
+
+    // Clean verification passes.
+    const clean = await app
+      .inject({ method: "GET", url: `/v1/runs/${run.id}/receipt/verify` })
+      .then((r) => r.json());
+    expect(clean.valid).toBe(true);
+    expect(clean.hashValid).toBe(true);
+    expect(clean.signatureValid).toBe(true);
+    expect(clean.recomputedHash).toBe(clean.sealedHash);
+
+    // Tamper with a sealed event directly in the database.
+    await prisma.event.updateMany({
+      where: { runId: run.id, eventType: "open_pr" },
+      data: { targetSystem: "evil-host" },
+    });
+
+    const tampered = await app
+      .inject({ method: "GET", url: `/v1/runs/${run.id}/receipt/verify` })
+      .then((r) => r.json());
+    expect(tampered.hashValid).toBe(false); // recomputed hash no longer matches the seal
+    expect(tampered.valid).toBe(false);
+    expect(tampered.recomputedHash).not.toBe(tampered.sealedHash);
+  });
+
   it("serves a stable receipt from the receipt endpoint", async () => {
     const { run } = await buildRunWithEvents();
     const finalize = await app
