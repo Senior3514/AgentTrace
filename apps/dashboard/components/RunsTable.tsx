@@ -9,6 +9,14 @@ import { formatDuration, formatRelative, shortHash } from "../lib/format";
 const STATUSES = ["ALL", "RUNNING", "FINALIZED", "FAILED", "ABORTED"];
 const RISKS = ["ALL", "NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL"];
 
+const RISK_ACCENT: Record<string, string> = {
+  NONE: "transparent",
+  LOW: "#3BA7FF",
+  MEDIUM: "#F6B84C",
+  HIGH: "#FF5C7A",
+  CRITICAL: "#FF5C7A",
+};
+
 export function RunsTable({ runs }: { runs: RunRow[] }) {
   const [status, setStatus] = useState("ALL");
   const [risk, setRisk] = useState("ALL");
@@ -61,7 +69,7 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
           <tbody className="divide-y divide-border">
             {filtered.map((run) => (
               <tr key={run.id} className="hover:bg-surface-2/40">
-                <td className="td">
+                <td className="td border-l-2" style={{ borderColor: RISK_ACCENT[run.riskLevel ?? "NONE"] ?? "transparent" }}>
                   <Link href={`/runs/${run.id}`} className="link mono">
                     {run.runExternalId ?? shortHash(run.id, 10)}
                   </Link>

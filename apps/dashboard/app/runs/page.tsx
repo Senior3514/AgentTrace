@@ -1,6 +1,7 @@
 import { ApiUnavailable, listRuns } from "../../lib/api";
 import { PageHeader } from "../../components/ui";
 import { RunsTable } from "../../components/RunsTable";
+import { SummaryStrip } from "../../components/SummaryStrip";
 import { EmptyState, ErrorState } from "../../components/states";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,8 @@ export default async function RunsPage() {
   }
 
   const runs = data?.items ?? [];
+  const count = (pred: (r: (typeof runs)[number]) => boolean) => runs.filter(pred).length;
+  const highRisk = count((r) => r.riskLevel === "HIGH" || r.riskLevel === "CRITICAL");
 
   return (
     <>
@@ -32,7 +35,19 @@ export default async function RunsPage() {
           description="Start a run via the API or run `pnpm seed` to load a sample run."
         />
       ) : (
-        <RunsTable runs={runs} />
+        <>
+          <SummaryStrip
+            tiles={[
+              { label: "Total", value: runs.length },
+              { label: "Running", value: count((r) => r.status === "RUNNING"), accent: "trace" },
+              { label: "Finalized", value: count((r) => r.status === "FINALIZED"), accent: "verified" },
+              { label: "High / critical", value: highRisk, accent: highRisk > 0 ? "critical" : "muted" },
+              { label: "Receipts", value: count((r) => Boolean(r.receiptHash)), accent: "verified" },
+              { label: "Failed / aborted", value: count((r) => r.status === "FAILED" || r.status === "ABORTED"), accent: "warning" },
+            ]}
+          />
+          <RunsTable runs={runs} />
+        </>
       )}
     </>
   );
