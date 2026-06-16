@@ -1,5 +1,22 @@
 # Deploying AgentTrace to Vercel
 
+## Simplest working API (3 steps)
+
+For the **API** project (Root Directory = `apps/api`):
+
+1. **Add a database.** In the project → *Storage*, create a **Vercel Postgres**
+   (or connect Neon/Supabase). This sets `DATABASE_URL` automatically.
+2. **Set two env vars:** `DEMO_MODE=true` and `RECEIPT_SIGNING_KEY=<hex>`
+   (`pnpm keys:generate`). Redeploy.
+3. **Turn off Deployment Protection** (*Settings → Deployment Protection*) so the
+   API is publicly reachable.
+
+That's it. The build **auto-applies migrations** (`prisma migrate deploy`) and,
+with `DEMO_MODE=true`, the API **auto-seeds** four demo runs on first boot.
+Verify: `curl https://<api>.vercel.app/health` → `{"status":"ok","db":"up"}`.
+
+---
+
 AgentTrace deploys as **two Vercel projects from this one monorepo**:
 
 | Project | Root Directory | What it is |
