@@ -11,6 +11,10 @@ export const RECEIPT_VERSION = "agenttrace.receipt.v1" as const;
 export const HASH_ALGORITHM = "sha256" as const;
 export const SIGNATURE_ALGORITHM = "ed25519" as const;
 
+// Versions this build knows how to verify. Lets the format evolve without
+// silently mis-verifying receipts produced by a future (or older) version.
+export const SUPPORTED_RECEIPT_VERSIONS: readonly string[] = [RECEIPT_VERSION];
+
 export interface ReceiptEventEntry {
   seqNo: number;
   eventType: string;
@@ -73,6 +77,8 @@ export interface ReceiptBody {
 }
 
 export interface Receipt {
+  /** Envelope format version. Verifiers branch on this before checking. */
+  receiptVersion: string;
   body: ReceiptBody;
   runHash: string;
   signature: string;
@@ -84,19 +90,39 @@ export interface ReceiptVerification {
   hashValid: boolean;
   signatureValid: boolean;
   valid: boolean;
+  /** False when the receipt's version is not in SUPPORTED_RECEIPT_VERSIONS. */
+  versionSupported: boolean;
+}
+
+/** The receipt's declared version, tolerant of older receipts (envelope or body). */
+export function receiptVersionOf(receipt: Receipt): string {
+  return receipt.receiptVersion ?? receipt.body?.version ?? "";
 }
 
 /**
  * Independently verify a receipt: recompute the run hash from the body and
  * check the Ed25519 signature against the embedded public key. Requires no
  * server, no private key, and no database — only the receipt itself.
+ *
+ * Unknown receipt versions are rejected (`versionSupported: false`, `valid:
+ * false`) rather than verified under assumptions that may not hold for a format
+ * this build does not understand.
  */
 export function verifyReceipt(receipt: Receipt): ReceiptVerification {
+  const versionSupported = SUPPORTED_RECEIPT_VERSIONS.includes(receiptVersionOf(receipt));
+  if (!versionSupported) {
+    return { hashValid: false, signatureValid: false, valid: false, versionSupported: false };
+  }
   const hashValid = hashCanonical(receipt.body) === receipt.runHash;
   const signatureValid = verifySignature(
     receipt.runHash,
     receipt.signature,
     receipt.signedBy,
   );
-  return { hashValid, signatureValid, valid: hashValid && signatureValid };
+  return {
+    hashValid,
+    signatureValid,
+    valid: hashValid && signatureValid,
+    versionSupported: true,
+  };
 }

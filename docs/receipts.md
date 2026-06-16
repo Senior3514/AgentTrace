@@ -28,6 +28,7 @@ the signer's public key:
 
 ```json
 {
+  "receiptVersion": "agenttrace.receipt.v1",
   "body": { "version": "agenttrace.receipt.v1", "...": "..." },
   "runHash": "<sha256 hex>",
   "signature": "<ed25519 hex>",
@@ -36,10 +37,16 @@ the signer's public key:
 }
 ```
 
+`receiptVersion` is an envelope field so verifiers can branch on the format
+before doing any crypto. It lets the receipt format evolve without older
+verifiers silently mis-validating a newer receipt.
+
 ## Verification
 
 `verifyReceipt(receipt)` (exported from `@agenttrace/shared` and the SDK):
 
+0. checks `receiptVersion` is in `SUPPORTED_RECEIPT_VERSIONS` → `versionSupported`
+   (an unknown version short-circuits to `valid: false`)
 1. recomputes `SHA-256(canonical(body))` and compares to `runHash` → `hashValid`
 2. verifies the Ed25519 `signature` over `runHash` using `signedBy` →
    `signatureValid`
