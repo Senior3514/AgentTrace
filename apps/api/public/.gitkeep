@@ -1,0 +1,3 @@
+# Vercel requires an output directory to exist after the build step. The
+# AgentTrace API is serverless-only (see ../vercel.json -> functions/rewrites),
+# so this directory is intentionally empty.
