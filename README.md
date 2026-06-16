@@ -70,11 +70,14 @@ docker compose up --build
 # Dashboard:  http://localhost:3000
 ```
 
-The API container applies migrations on boot. Seed it with:
+The API container applies migrations on boot. Seed four realistic runs with:
 
 ```bash
 docker compose exec api pnpm seed
 ```
+
+New here? Follow [`docs/quickstart.md`](docs/quickstart.md) — clone → seed →
+create a run → finalize → **a receipt that verifies** (`curl` and SDK).
 
 ## Deploy (Vercel)
 

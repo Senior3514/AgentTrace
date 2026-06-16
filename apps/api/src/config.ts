@@ -36,6 +36,8 @@ export interface AppConfig {
   publicKey: string | undefined;
   rateLimitMax: number;
   rateLimitWindow: string;
+  /** When true, auto-seed an empty DB on boot and enable POST /v1/demo/reset. */
+  demoMode: boolean;
 }
 
 export function loadConfig(): AppConfig {
@@ -47,6 +49,7 @@ export function loadConfig(): AppConfig {
     publicKey: process.env.RECEIPT_PUBLIC_KEY || undefined,
     rateLimitMax: Number(process.env.RATE_LIMIT_MAX ?? 1000),
     rateLimitWindow: process.env.RATE_LIMIT_WINDOW ?? "1 minute",
+    demoMode: process.env.DEMO_MODE === "true",
   };
 }
 
