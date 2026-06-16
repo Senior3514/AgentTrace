@@ -101,12 +101,15 @@ less ambiguity.
 - [ ] Retry loops, recursion depth, and tool chaining limits are enforced.
 - [ ] There is a kill switch or containment mechanism for suspicious or out-of-scope behavior.
 - [ ] Agents cannot continue executing after a policy violation without explicit override.
-- [ ] Finalized runs are immutable from an audit perspective.
+- [ ] Finalized runs are tamper-evident from an audit perspective (later edits
+      are *detectable*, not prevented — see the [threat model](threat-model.md)).
 - [ ] Integrity checks exist for event ordering and receipt generation.
 
 > In AgentTrace: appends to a non-`RUNNING` run are rejected, finalize verifies
 > gap-free sequence continuity, and every finalized run produces a signed,
-> hash-chained receipt. These are enforced invariants, not conventions.
+> hash-chained receipt. These are enforced invariants, not conventions. They
+> cover the *reported* trail only — AgentTrace does not prove completeness; see
+> the [threat model](threat-model.md).
 
 ## Validation before production
 
