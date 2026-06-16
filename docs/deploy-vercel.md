@@ -47,8 +47,16 @@ needs its own project (next section) — one Vercel project builds one app.
 ## 1. API project (`apps/api`)
 
 Import the repo, set **Root Directory = `apps/api`**. `apps/api/vercel.json`
-already configures the function and the `prisma generate` build step, and
-rewrites every path to the Fastify handler in `apps/api/api/index.ts`.
+configures the build (`prisma generate` + an esbuild bundle step) and rewrites
+every path to the Fastify handler.
+
+> The build step bundles the serverless function with esbuild
+> (`vercel-build.mjs` → `api/_server.js`), inlining the workspace package
+> `@agenttrace/shared` (TypeScript source) while keeping Fastify/Prisma/Zod
+> external. This is what avoids the `TS2305/TS2339` resolution errors Vercel's
+> builder otherwise hits on the raw `.ts` function, and guarantees the deployed
+> function is self-contained. Verified locally by running the bundle under plain
+> `node` (no `tsx`): `/health` → 200, `/v1/runs` → 200.
 
 > The API is serverless-only (no static frontend). Vercel still requires an
 > output directory to exist after a custom build command, so `vercel.json`

@@ -25,6 +25,9 @@ pnpm-debug.log*
 apps/desktop/dist/
 apps/desktop/release/
 
+# vercel serverless bundle (built during deploy)
+apps/api/api/_server.js
+
 # os / editor
 .DS_Store
 .idea/
