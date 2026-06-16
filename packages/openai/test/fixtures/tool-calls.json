@@ -1,0 +1,23 @@
+{
+  "id": "chatcmpl-FIXTURE-1",
+  "object": "chat.completion",
+  "model": "gpt-4o-mini",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "tool_calls",
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          { "id": "call_a", "type": "function", "function": { "name": "search_repository", "arguments": "{\"query\":\"retry logic\"}" } },
+          { "id": "call_b", "type": "function", "function": { "name": "read_deploy_secret", "arguments": "{\"name\":\"DEPLOY_TOKEN\"}" } },
+          { "id": "call_c", "type": "function", "function": { "name": "run_tests", "arguments": "{\"suite\":\"unit\"}" } },
+          { "id": "call_d", "type": "function", "function": { "name": "create_pull_request", "arguments": "{\"title\":\"Add retry logic\"}" } },
+          { "id": "call_e", "type": "function", "function": { "name": "delete_branch", "arguments": "{\"branch\":\"tmp/wip\"}" } }
+        ]
+      }
+    }
+  ],
+  "usage": { "prompt_tokens": 412, "completion_tokens": 88, "total_tokens": 500 }
+}
