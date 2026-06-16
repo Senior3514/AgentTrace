@@ -3,7 +3,9 @@ import {
   hashCanonical,
   HASH_ALGORITHM,
   RECEIPT_VERSION,
+  receiptVersionOf,
   SIGNATURE_ALGORITHM,
+  SUPPORTED_RECEIPT_VERSIONS,
   type Receipt,
   type ReceiptApprovalEntry,
   type ReceiptBody,
@@ -180,6 +182,7 @@ export function buildReceipt(bundle: RunBundle, signingKeyHex: string, publicKey
   const signature = signMessage(runHash, signingKeyHex);
 
   const receipt: Receipt = {
+    receiptVersion: RECEIPT_VERSION,
     body,
     runHash,
     signature,
@@ -195,6 +198,10 @@ export function verifyReceipt(receipt: Receipt): {
   hashValid: boolean;
   signatureValid: boolean;
 } {
+  // Reject formats this build does not understand before checking anything else.
+  if (!SUPPORTED_RECEIPT_VERSIONS.includes(receiptVersionOf(receipt))) {
+    return { hashValid: false, signatureValid: false };
+  }
   const recomputed = hashCanonical(receipt.body);
   const hashValid = recomputed === receipt.runHash;
   const signatureValid = verifySignature(
