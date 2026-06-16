@@ -75,6 +75,24 @@ DATABASE_URL="<pooled-or-direct-url>" pnpm prisma migrate deploy
 (Prisma `binaryTargets` already include `rhel-openssl-3.0.x` for the Lambda
 runtime, so the client works once generated during the build.)
 
+### Troubleshooting: `FUNCTION_INVOCATION_FAILED` / "This Serverless Function has crashed"
+
+This almost always means **`DATABASE_URL` is not set** on the project. The
+Prisma client is constructed lazily (`apps/api/src/db.ts`), so a missing
+`DATABASE_URL` no longer crashes the function at cold start — but the API still
+needs a database to do anything. Check liveness vs. DB readiness:
+
+```bash
+curl https://<api>.vercel.app/health
+# { "status": "ok", "db": "up" }    ← function alive AND database reachable
+# { "status": "ok", "db": "down" }  ← function alive, but DATABASE_URL missing/unreachable
+```
+
+If `db` is `down`: set `DATABASE_URL` to a **pooled** Postgres URL in the Vercel
+project's Environment Variables, redeploy, and run `prisma migrate deploy`
+against it. (If `/health` itself 500s, the crash is something else — inspect the
+function logs.)
+
 ### Deployment Protection
 
 A fresh Vercel project may return **HTTP 401/403** on every request because

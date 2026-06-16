@@ -3,6 +3,7 @@ import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { ZodError } from "zod";
 import { config } from "./config.js";
+import { prisma } from "./db.js";
 import { AppError } from "./lib/errors.js";
 import { readRoutes } from "./routes/read.js";
 import { writeRoutes } from "./routes/write.js";
@@ -48,7 +49,19 @@ export async function buildApp(opts: BuildOptions = {}): Promise<FastifyInstance
     return reply.code(500).send({ error: "internal_error", message: "Internal server error" });
   });
 
-  app.get("/health", async () => ({ status: "ok", service: "agenttrace-api" }));
+  // Liveness + DB readiness. Always 200 when the function is alive — the `db`
+  // field reports connectivity without failing, so a misconfigured/absent
+  // DATABASE_URL is visible here instead of crashing the function.
+  app.get("/health", async () => {
+    let db: "up" | "down" = "down";
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      db = "up";
+    } catch {
+      db = "down";
+    }
+    return { status: "ok", service: "agenttrace-api", db };
+  });
 
   await app.register(
     async (v1) => {
