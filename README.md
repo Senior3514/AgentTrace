@@ -9,6 +9,11 @@ finalized runs into **signed, independently verifiable receipts**.
 > Trust comes from evidence, not claims. Important actions must be traceable.
 > Finalized runs must produce verifiable receipts.
 
+A receipt proves the **integrity and authenticity of the event trail the agent
+reported** — not that the trail is **complete**. Read the
+[**threat model**](docs/threat-model.md) for the precise scope before relying on
+it; it is the authoritative statement of what a receipt does and does not prove.
+
 ---
 
 ## What's in the box
