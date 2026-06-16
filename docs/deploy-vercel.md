@@ -50,6 +50,11 @@ Import the repo, set **Root Directory = `apps/api`**. `apps/api/vercel.json`
 already configures the function and the `prisma generate` build step, and
 rewrites every path to the Fastify handler in `apps/api/api/index.ts`.
 
+> The API is serverless-only (no static frontend). Vercel still requires an
+> output directory to exist after a custom build command, so `vercel.json`
+> creates an empty `public/` (`outputDirectory: public`) purely to satisfy that
+> check — without it the build fails with *No Output Directory named "public"*.
+
 Environment variables:
 
 | Var | Required | Notes |
