@@ -25,6 +25,7 @@ it; it is the authoritative statement of what a receipt does and does not prove.
 | Dashboard | `apps/dashboard` | Next.js App Router. Agents, runs, event timeline, signed-receipt viewer with on-page verification. |
 | Shared package | `packages/shared` | Enums, Zod schemas, canonical hashing, Ed25519, deterministic risk engine, receipt types. |
 | TypeScript SDK | `packages/sdk-ts` | `@agenttrace/sdk` typed client + local receipt verification + coding-agent demo. |
+| OpenAI adapter | `packages/openai` | `@agenttrace/openai` — wrap an OpenAI tool-calling session into a signed receipt. |
 | Schema + seed | `prisma` | PostgreSQL schema, migrations, realistic seed run. |
 
 ## Architecture
