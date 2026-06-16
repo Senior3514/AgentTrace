@@ -10,6 +10,33 @@ AgentTrace deploys as **two Vercel projects from this one monorepo**:
 > Names are illustrative — rename the projects freely; only the env vars below
 > need to match up.
 
+## If you imported the repo as a single root project
+
+A common first mistake is importing the repo with **Root Directory = the repo
+root** and no framework. Vercel then runs a generic build, finds no output, and
+fails with:
+
+> Build Failed — No Output Directory named "public" found after the Build completed.
+
+This repo ships a root [`vercel.json`](../vercel.json) that resolves that case
+by building the **dashboard** from the root:
+
+```jsonc
+{
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @agenttrace/dashboard build",
+  "outputDirectory": "apps/dashboard/.next"
+}
+```
+
+So a root-level project deploys the dashboard out of the box. The **API** still
+needs its own project (next section) — one Vercel project builds one app.
+
+> Most robust alternative: instead of relying on the root config, set each
+> project's **Root Directory** to `apps/dashboard` / `apps/api`. Then the
+> per-app `vercel.json` files apply and the root one is ignored.
+
 ## Prerequisites
 
 - A **hosted PostgreSQL** with connection pooling (serverless opens many short
