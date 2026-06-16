@@ -24,6 +24,9 @@ import { createRun } from "../services/runs.js";
 import { appendEvent } from "../services/events.js";
 import { finalizeRun } from "../services/finalize.js";
 import { createApiKey, listApiKeys, revokeApiKey } from "../services/api-keys.js";
+import { resetDemoData } from "../services/demo.js";
+import { config } from "../config.js";
+import { notFound } from "../lib/errors.js";
 import { z } from "zod";
 
 const createApiKeySchema = z.object({ name: z.string().min(1).max(120) });
@@ -31,6 +34,16 @@ const createApiKeySchema = z.object({ name: z.string().min(1).max(120) });
 /** All state-mutating endpoints. API key required. */
 export async function writeRoutes(app: FastifyInstance): Promise<void> {
   app.addHook("preHandler", requireApiKey);
+
+  // DEMO_MODE only: wipe and re-seed the demo dataset. Guarded so it can never
+  // run against a real (non-demo) database.
+  app.post("/demo/reset", async (_req, reply) => {
+    if (!config.demoMode) {
+      throw notFound("Demo reset is only available when DEMO_MODE=true");
+    }
+    const summary = await resetDemoData();
+    return reply.code(200).send(summary);
+  });
 
   app.post("/owners", async (req, reply) => {
     const owner = await createOwner(parse(createOwnerSchema, req.body));
