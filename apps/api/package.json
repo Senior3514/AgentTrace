@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "esbuild": "^0.24.2",
     "fast-check": "^3.23.2",
     "prisma": "^5.22.0",
     "tsx": "^4.19.2",
