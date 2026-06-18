@@ -4,16 +4,21 @@
 
 For the **API** project (Root Directory = `apps/api`):
 
-1. **Add a database.** In the project → *Storage*, create a **Vercel Postgres**
-   (or connect Neon/Supabase). This sets `DATABASE_URL` automatically.
+1. **Add a database.** In the project → *Storage*, create a Postgres database
+   (Vercel/Neon/Prisma Postgres/Supabase all work). The integration adds its
+   connection env var — whatever it's named (`DATABASE_URL`,
+   `POSTGRES_PRISMA_URL`, `POSTGRES_URL`, …); **AgentTrace auto-detects it**, so
+   no manual mapping is needed.
 2. **Set two env vars:** `DEMO_MODE=true` and `RECEIPT_SIGNING_KEY=<hex>`
    (`pnpm keys:generate`). Redeploy.
 3. **Turn off Deployment Protection** (*Settings → Deployment Protection*) so the
    API is publicly reachable.
 
-That's it. The build **auto-applies migrations** (`prisma migrate deploy`) and,
-with `DEMO_MODE=true`, the API **auto-seeds** four demo runs on first boot.
-Verify: `curl https://<api>.vercel.app/health` → `{"status":"ok","db":"up"}`.
+That's it. The build **auto-applies migrations** (`prisma migrate deploy`,
+against whichever DB var is present) and, with `DEMO_MODE=true`, the API
+**auto-seeds** four demo runs on first boot.
+Verify: `curl https://<api>.vercel.app/health` →
+`{"status":"ok","db":"up"}` (`db:"down"` means no database is attached yet).
 
 ---
 
