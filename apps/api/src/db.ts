@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { ensureDatabaseUrlEnv } from "./lib/database-url.js";
 
 // Single shared Prisma client, constructed lazily.
 //
@@ -12,6 +13,9 @@ import { PrismaClient } from "@prisma/client";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createClient(): PrismaClient {
+  // Normalize DATABASE_URL from platform-specific names (e.g. POSTGRES_PRISMA_URL)
+  // before Prisma reads it.
+  ensureDatabaseUrlEnv();
   const client = new PrismaClient({
     log: process.env.PRISMA_LOG === "true" ? ["query", "warn", "error"] : ["warn", "error"],
   });
