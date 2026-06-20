@@ -31,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav className="flex items-center gap-1">
               <NavLink href="/runs">Runs</NavLink>
               <NavLink href="/agents">Agents</NavLink>
+              <NavLink href="/verify">Verify</NavLink>
             </nav>
             <div className="ml-auto flex items-center gap-3 text-2xs uppercase tracking-wider text-muted">
               <span className="hidden lg:inline">Execution Evidence Layer</span>
