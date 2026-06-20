@@ -6,21 +6,25 @@ pure web app; this only frames it.
 
 ## What it does
 
+- **First run shows a Connect screen** — paste your AgentTrace dashboard URL
+  (e.g. your Vercel deployment), *Test connection*, then *Connect*. The choice is
+  remembered; subsequent launches open straight into your dashboard.
 - Opens the dashboard in a native window (`contextIsolation` on,
-  `nodeIntegration` off, `sandbox` on — no Node APIs exposed to the page).
+  `nodeIntegration` off, `sandbox` on — no Node APIs exposed to the page; a small
+  audited IPC bridge powers only the connect screen).
 - Opens external links (GitHub, the API host) in the system browser.
-- Single-instance; native application menu (reload, devtools, zoom, fullscreen).
+- Single-instance; native menu (*File → Connect to a deployment…*, reload,
+  devtools, zoom, fullscreen).
 
 ## Pointing it at a dashboard
 
 Resolution order:
 
-1. `dashboardUrl` in the per-user config file
-   (*File → Edit Dashboard URL…* opens it), then
+1. The URL you entered on the **Connect screen** (persisted per user), then
 2. the `AGENTTRACE_DASHBOARD_URL` env var, then
-3. `http://localhost:3000` (local dev default).
+3. the Connect screen (first run / nothing configured).
 
-For a fully hosted setup, point it at your Vercel dashboard deployment:
+To pre-seed the URL (e.g. for a managed rollout):
 
 ```bash
 AGENTTRACE_DASHBOARD_URL=https://<dashboard>.vercel.app pnpm --filter @agenttrace/desktop start
