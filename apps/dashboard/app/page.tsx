@@ -159,12 +159,20 @@ at.verifyReceipt(receipt); // { valid: true }`}
               Record the evidence. Seal the receipt. Verify anywhere.
             </p>
           </div>
-          <Link
-            href="/runs"
-            className="rounded-md bg-verified px-4 py-2 text-sm font-medium text-bg hover:opacity-90"
-          >
-            Explore runs →
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/verify"
+              className="rounded-md border border-border px-4 py-2 text-sm text-text hover:border-trace"
+            >
+              Verify a receipt
+            </Link>
+            <Link
+              href="/runs"
+              className="rounded-md bg-verified px-4 py-2 text-sm font-medium text-bg hover:opacity-90"
+            >
+              Explore runs →
+            </Link>
+          </div>
         </div>
         <p className="mt-6 text-center text-2xs uppercase tracking-wider text-muted">
           AgentTrace · execution evidence layer · v0
