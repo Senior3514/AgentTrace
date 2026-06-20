@@ -6,6 +6,7 @@ directories:
   buildResources: build
 files:
   - dist/**/*
+  - renderer/**/*
   - package.json
 # App icons are optional; electron-builder falls back to defaults when the
 # build/ resources are absent. Drop icon.icns / icon.ico / icon.png into build/

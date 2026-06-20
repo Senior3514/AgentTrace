@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';"
+    />
+    <title>Connect to AgentTrace</title>
+    <style>
+      :root {
+        --bg: #0a0d10; --surface: #11161b; --surface2: #151c22; --border: #26313b;
+        --text: #e8f0f7; --muted: #93a4b5; --verified: #2ee6a6; --trace: #3ba7ff; --critical: #ff5c7a;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--bg); color: var(--text);
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        display: flex; align-items: center; justify-content: center; padding: 24px;
+        -webkit-font-smoothing: antialiased;
+      }
+      .card {
+        width: 100%; max-width: 520px; border: 1px solid var(--border);
+        background: var(--surface); border-radius: 12px; padding: 32px;
+      }
+      .badge {
+        display: inline-flex; align-items: center; gap: 8px; font-size: 11px;
+        text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+        border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px;
+      }
+      .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--verified); }
+      h1 { font-size: 22px; font-weight: 600; margin: 18px 0 6px; letter-spacing: -0.01em; }
+      p.sub { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 22px; }
+      label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+      input {
+        width: 100%; padding: 11px 12px; border-radius: 8px; border: 1px solid var(--border);
+        background: var(--surface2); color: var(--text); font-size: 14px; outline: none;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+      }
+      input:focus { border-color: var(--trace); }
+      .row { display: flex; gap: 10px; margin-top: 16px; }
+      button {
+        font-size: 14px; font-weight: 500; padding: 11px 16px; border-radius: 8px; cursor: pointer;
+        border: 1px solid var(--border); background: transparent; color: var(--text);
+      }
+      button:hover { border-color: var(--trace); }
+      button.primary { background: var(--verified); color: var(--bg); border-color: var(--verified); }
+      button.primary:hover { opacity: 0.9; }
+      button:disabled { opacity: 0.5; cursor: default; }
+      .status { margin-top: 16px; font-size: 13px; min-height: 18px; }
+      .status.ok { color: var(--verified); }
+      .status.err { color: var(--critical); }
+      .status.info { color: var(--muted); }
+      .help { margin-top: 22px; font-size: 12px; color: var(--muted); }
+      .help a { color: var(--trace); cursor: pointer; text-decoration: none; }
+      .help a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <span class="badge"><span class="dot"></span> AgentTrace Desktop</span>
+      <h1>Connect to your deployment</h1>
+      <p class="sub">
+        Paste the URL of your AgentTrace dashboard (for example your Vercel
+        deployment). The app will open it as a native window.
+      </p>
+
+      <label for="url">Dashboard URL</label>
+      <input id="url" type="text" placeholder="https://your-dashboard.vercel.app" autocomplete="off" spellcheck="false" />
+
+      <div class="row">
+        <button id="test">Test connection</button>
+        <button id="connect" class="primary" style="margin-left:auto;">Connect</button>
+      </div>
+
+      <div id="status" class="status info"></div>
+
+      <p class="help">
+        Don't have one yet? <a id="docs">Read the deployment guide →</a>
+      </p>
+    </div>
+
+    <script>
+      const api = window.agenttrace;
+      const $ = (id) => document.getElementById(id);
+      const urlInput = $("url");
+      const status = $("status");
+
+      function setStatus(msg, kind) {
+        status.textContent = msg;
+        status.className = "status " + (kind || "info");
+      }
+
+      // Pre-fill with any previously configured URL.
+      if (api && api.getDashboardUrl) {
+        api.getDashboardUrl().then((u) => { if (u) urlInput.value = u; });
+      }
+
+      $("test").addEventListener("click", async () => {
+        setStatus("Testing…", "info");
+        const res = await api.testConnection(urlInput.value);
+        setStatus(res.message, res.ok ? "ok" : "err");
+      });
+
+      $("connect").addEventListener("click", async () => {
+        setStatus("Connecting…", "info");
+        const res = await api.connect(urlInput.value);
+        if (!res.ok) setStatus(res.message, "err");
+      });
+
+      urlInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("connect").click();
+      });
+
+      $("docs").addEventListener("click", () => {
+        api.openExternal("https://github.com/Senior3514/AgentTrace/blob/main/docs/deploy-vercel.md");
+      });
+    </script>
+  </body>
+</html>
