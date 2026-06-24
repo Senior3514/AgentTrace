@@ -38,6 +38,8 @@ export interface AppConfig {
   rateLimitWindow: string;
   /** When true, auto-seed an empty DB on boot and enable POST /v1/demo/reset. */
   demoMode: boolean;
+  /** Allow-list of CORS origins; empty means allow all. */
+  corsOrigins: string[];
 }
 
 export function loadConfig(): AppConfig {
@@ -50,6 +52,7 @@ export function loadConfig(): AppConfig {
     rateLimitMax: Number(process.env.RATE_LIMIT_MAX ?? 1000),
     rateLimitWindow: process.env.RATE_LIMIT_WINDOW ?? "1 minute",
     demoMode: process.env.DEMO_MODE === "true",
+    corsOrigins: parseKeys(process.env.CORS_ORIGINS),
   };
 }
 
