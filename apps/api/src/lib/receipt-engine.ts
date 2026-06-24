@@ -125,30 +125,54 @@ export function buildReceipt(bundle: RunBundle, signingKeyHex: string, publicKey
   }
 
   const seqByEventId = new Map(orderedEvents.map((e) => [e.id, e.seqNo]));
+  // The seqNo an entity is bound to, or null for run-level / orphaned references.
+  const seqForEventId = (eventId: string | null): number | null =>
+    eventId ? (seqByEventId.get(eventId) ?? null) : null;
+  // Sort key: run-level (null) and orphaned references share a fixed slot so
+  // they order deterministically relative to event-bound entries.
+  const RUNLEVEL_SORT = -1;
+  const seqSortKey = (seqNo: number | null): number => seqNo ?? RUNLEVEL_SORT;
 
-  const approvals: ReceiptApprovalEntry[] = [...bundle.approvals]
-    .sort((a, b) => a.approvedAt.getTime() - b.approvedAt.getTime())
+  const byNum = (a: number, b: number): number => (a < b ? -1 : a > b ? 1 : 0);
+  const byStr = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+
+  // Total ordering over content fields (all of which are in the hashed body) so
+  // the same run always yields byte-identical approvals/riskFlags — and thus the
+  // same runHash — regardless of the order rows came back from the database.
+  // `approvedAt` stays the primary key (unchanged for the common distinct case);
+  // the rest break ties that were previously resolved by nondeterministic scan
+  // order (approvedAt defaults to now() and routinely collides).
+  const approvals: ReceiptApprovalEntry[] = bundle.approvals
     .map((a) => ({
-      eventSeqNo: a.eventId ? (seqByEventId.get(a.eventId) ?? null) : null,
+      eventSeqNo: seqForEventId(a.eventId),
       approverType: a.approverType,
       approverId: a.approverId,
       decision: a.decision,
       approvedAt: a.approvedAt.toISOString(),
-    }));
+    }))
+    .sort(
+      (a, b) =>
+        byStr(a.approvedAt, b.approvedAt) ||
+        byNum(seqSortKey(a.eventSeqNo), seqSortKey(b.eventSeqNo)) ||
+        byStr(a.approverType, b.approverType) ||
+        byStr(a.approverId, b.approverId) ||
+        byStr(a.decision, b.decision),
+    );
 
-  const riskFlags: ReceiptRiskFlagEntry[] = [...bundle.riskFlags]
-    .sort((a, b) => {
-      const sa = a.eventId ? (seqByEventId.get(a.eventId) ?? -1) : -1;
-      const sb = b.eventId ? (seqByEventId.get(b.eventId) ?? -1) : -1;
-      if (sa !== sb) return sa - sb;
-      return a.flagType.localeCompare(b.flagType);
-    })
+  const riskFlags: ReceiptRiskFlagEntry[] = bundle.riskFlags
     .map((f) => ({
       flagType: f.flagType,
       severity: f.severity,
-      eventSeqNo: f.eventId ? (seqByEventId.get(f.eventId) ?? null) : null,
+      eventSeqNo: seqForEventId(f.eventId),
       title: f.title,
-    }));
+    }))
+    .sort(
+      (a, b) =>
+        byNum(seqSortKey(a.eventSeqNo), seqSortKey(b.eventSeqNo)) ||
+        byStr(a.flagType, b.flagType) ||
+        byStr(String(a.severity), String(b.severity)) ||
+        byStr(a.title, b.title),
+    );
 
   const body: ReceiptBody = {
     version: RECEIPT_VERSION,
