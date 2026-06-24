@@ -41,7 +41,7 @@ export async function finalizeRun(
       where: { runId },
       orderBy: { seqNo: "asc" },
     });
-    const approvals = await tx.approval.findMany({ where: { runId } });
+    const approvals = await tx.approval.findMany({ where: { runId }, orderBy: [{ approvedAt: "asc" }, { id: "asc" }] });
 
     // Which events carry an explicit APPROVED approval.
     const approvedEventIds = new Set(
@@ -88,7 +88,7 @@ export async function finalizeRun(
         })),
       });
     }
-    const riskFlags = await tx.riskFlag.findMany({ where: { runId } });
+    const riskFlags = await tx.riskFlag.findMany({ where: { runId }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] });
 
     const endedAt = input.endedAt ?? new Date();
     const runForReceipt = {
@@ -151,8 +151,8 @@ export async function getReceipt(runId: string): Promise<Receipt> {
   }
 
   const events = await prisma.event.findMany({ where: { runId }, orderBy: { seqNo: "asc" } });
-  const approvals = await prisma.approval.findMany({ where: { runId } });
-  const riskFlags = await prisma.riskFlag.findMany({ where: { runId } });
+  const approvals = await prisma.approval.findMany({ where: { runId }, orderBy: [{ approvedAt: "asc" }, { id: "asc" }] });
+  const riskFlags = await prisma.riskFlag.findMany({ where: { runId }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] });
 
   const { receipt } = buildReceipt(
     { run, agent: run.agent, policy: run.policy, events, approvals, riskFlags },
@@ -205,8 +205,8 @@ export async function getRunVerification(runId: string): Promise<RunVerification
   }
 
   const events = await prisma.event.findMany({ where: { runId }, orderBy: { seqNo: "asc" } });
-  const approvals = await prisma.approval.findMany({ where: { runId } });
-  const riskFlags = await prisma.riskFlag.findMany({ where: { runId } });
+  const approvals = await prisma.approval.findMany({ where: { runId }, orderBy: [{ approvedAt: "asc" }, { id: "asc" }] });
+  const riskFlags = await prisma.riskFlag.findMany({ where: { runId }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] });
 
   const { receipt } = buildReceipt(
     { run, agent: run.agent, policy: run.policy, events, approvals, riskFlags },

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import fc from "fast-check";
-import type { Agent, Event, Run } from "@prisma/client";
+import type { Agent, Approval, Event, RiskFlag, Run } from "@prisma/client";
 import { buildReceipt, type RunBundle } from "../src/lib/receipt-engine.js";
 import { getKeystore } from "../src/crypto/keystore.js";
 import { verifyReceipt } from "@agenttrace/shared";
@@ -159,5 +159,126 @@ describe("receipt engine — property based", () => {
     const res = verifyReceipt(future);
     expect(res.versionSupported).toBe(false);
     expect(res.valid).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Ordering determinism: approvals/riskFlags must produce a byte-identical
+// receipt regardless of the order the rows arrive in (e.g. from an unordered
+// DB scan). Regression guard for tie-breaking by scan order.
+// ---------------------------------------------------------------------------
+
+function makeApproval(p: {
+  id: string;
+  eventId: string | null;
+  approverId: string;
+  decision?: string;
+  approverType?: string;
+  approvedAtMs: number;
+}): Approval {
+  return {
+    id: p.id,
+    runId: "run-1",
+    eventId: p.eventId,
+    approverType: (p.approverType ?? "HUMAN") as never,
+    approverId: p.approverId,
+    decision: (p.decision ?? "APPROVED") as never,
+    reason: null,
+    approvedAt: new Date(p.approvedAtMs),
+    createdAt: new Date("2026-01-01T00:00:00Z"),
+  } as unknown as Approval;
+}
+
+function makeRiskFlag(p: {
+  id: string;
+  eventId: string | null;
+  flagType: string;
+  severity?: string;
+  title?: string;
+}): RiskFlag {
+  return {
+    id: p.id,
+    runId: "run-1",
+    eventId: p.eventId,
+    flagType: p.flagType,
+    severity: (p.severity ?? "HIGH") as never,
+    title: p.title ?? p.flagType,
+    description: "d",
+    createdAt: new Date("2026-01-01T00:00:00Z"),
+  } as unknown as RiskFlag;
+}
+
+const events4 = [0, 1, 2, 3].map((i) =>
+  makeEvent(i, { eventType: "e", actionClass: "READ", mutatesState: false, irreversible: false }),
+);
+const eventIdArb = fc.constantFrom<string | null>("ev-0", "ev-1", "ev-2", "ev-3", "ev-missing", null);
+
+const approvalArb = fc
+  .array(
+    fc.record({
+      eventId: eventIdArb,
+      approverId: fc.constantFrom("alice", "bob", "carol"),
+      decision: fc.constantFrom("APPROVED", "REJECTED", "ESCALATED"),
+      // Deliberately few distinct timestamps so collisions are common.
+      approvedAtMs: fc.constantFrom(1000, 1000, 1000, 2000),
+    }),
+    { maxLength: 6 },
+  )
+  .map((rows) => rows.map((r, i) => makeApproval({ id: `ap-${i}`, ...r })));
+
+const riskFlagArb = fc
+  .array(
+    fc.record({
+      eventId: eventIdArb,
+      flagType: fc.constantFrom("external_write", "secret_access", "policy_violation"),
+      severity: fc.constantFrom("HIGH", "CRITICAL", "MEDIUM"),
+    }),
+    { maxLength: 6 },
+  )
+  .map((rows) => rows.map((r, i) => makeRiskFlag({ id: `rf-${i}`, title: `t-${i % 2}`, ...r })));
+
+function hashWith(approvals: Approval[], riskFlags: RiskFlag[]): string {
+  return buildReceipt(
+    { run, agent, policy: null, events: events4, approvals, riskFlags },
+    privateKeyHex,
+    publicKeyHex,
+  ).receipt.runHash;
+}
+function sigWith(approvals: Approval[], riskFlags: RiskFlag[]): string {
+  return buildReceipt(
+    { run, agent, policy: null, events: events4, approvals, riskFlags },
+    privateKeyHex,
+    publicKeyHex,
+  ).receipt.signature;
+}
+const rotate = <T>(xs: T[]): T[] => (xs.length ? [...xs.slice(1), xs[0]!] : xs);
+
+describe("receipt engine — approvals/riskFlags ordering determinism", () => {
+  it("hash + signature are invariant to approval/riskFlag input order (incl. colliding timestamps & orphans)", () => {
+    fc.assert(
+      fc.property(approvalArb, riskFlagArb, (approvals, riskFlags) => {
+        const base = hashWith(approvals, riskFlags);
+        // reversed and rotated input orderings must yield the identical receipt
+        expect(hashWith([...approvals].reverse(), [...riskFlags].reverse())).toBe(base);
+        expect(hashWith(rotate(approvals), rotate(riskFlags))).toBe(base);
+        expect(sigWith([...approvals].reverse(), [...riskFlags].reverse())).toBe(
+          sigWith(approvals, riskFlags),
+        );
+      }),
+    );
+  });
+
+  it("reproduction: three approvals sharing one approvedAt hash identically under reordering", () => {
+    const t = 1_700_000_000_000;
+    const approvals = [
+      makeApproval({ id: "a1", eventId: "ev-1", approverId: "alice", approvedAtMs: t }),
+      makeApproval({ id: "a2", eventId: "ev-1", approverId: "bob", approvedAtMs: t }),
+      makeApproval({ id: "a3", eventId: "ev-2", approverId: "carol", approvedAtMs: t }),
+    ];
+    const h1 = hashWith(approvals, []);
+    const h2 = hashWith([approvals[2]!, approvals[0]!, approvals[1]!], []);
+    const h3 = hashWith([...approvals].reverse(), []);
+    expect(h2).toBe(h1);
+    expect(h3).toBe(h1);
   });
 });
