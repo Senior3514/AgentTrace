@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { ZodError } from "zod";
@@ -19,7 +20,20 @@ export async function buildApp(opts: BuildOptions = {}): Promise<FastifyInstance
     bodyLimit: 5 * 1024 * 1024,
   });
 
-  await app.register(cors, { origin: true });
+  // Security headers. Configured for a cross-origin JSON API: no CSP (we serve
+  // no HTML) and a cross-origin resource policy so the dashboard — typically a
+  // different origin — can still read responses. Keeps nosniff, frameguard,
+  // HSTS, referrer-policy, etc.
+  await app.register(helmet, {
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  });
+
+  // CORS: permissive by default; restrict to a fixed allow-list via CORS_ORIGINS.
+  await app.register(cors, {
+    origin: config.corsOrigins.length > 0 ? config.corsOrigins : true,
+  });
   await app.register(rateLimit, {
     max: config.rateLimitMax,
     timeWindow: config.rateLimitWindow,
