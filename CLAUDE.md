@@ -88,3 +88,26 @@ Do not build in v0:
 - do not restart working code
 - end each milestone with summary, changed files, test instructions, commit
   message, next step
+
+## Writing style
+- Never use the em dash character in any text (docs, README, comments, strings,
+  commit messages, PR bodies, chat). Use a regular hyphen instead. The em dash
+  reads as non human and is banned in this project's writing.
+
+## Build skills (.claude/skills)
+Ten skills encode the repeatable build and improvement workflow. Use them; the
+autonomous improvement loop chains them every round.
+- `verify-baseline`: sync main, ensure DB, run install + typecheck + tests.
+- `db-up`: start and migrate the local Postgres (it gets reaped on idle).
+- `improvement-scan`: multi dimension analysis plus adversarial ranking to pick
+  the single highest value to risk improvement to ship next.
+- `invariant-guard`: confirm the core invariants above still hold.
+- `e2e-smoke`: run the full quickstart against the real API and prove verify true.
+- `receipt-verify`: verify a receipt offline (hash, signature, version).
+- `vercel-doctor`: diagnose and keep the Vercel serverless deploy healthy.
+- `security-pass`: review the diff and codebase for security and robustness.
+- `ship-pr`: commit, push, open a PR with real evidence, watch CI, squash merge.
+- `round-summary`: write the concise end to end report after a round.
+
+Each round: improvement-scan, implement, verify-baseline + invariant-guard,
+ship-pr, round-summary. One focused, verified change per round.
