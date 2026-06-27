@@ -6,7 +6,7 @@ For the **API** project (Root Directory = `apps/api`):
 
 1. **Add a database.** In the project → *Storage*, create a Postgres database
    (Vercel/Neon/Prisma Postgres/Supabase all work). The integration adds its
-   connection env var — whatever it's named (`DATABASE_URL`,
+   connection env var - whatever it's named (`DATABASE_URL`,
    `POSTGRES_PRISMA_URL`, `POSTGRES_URL`, …); **AgentTrace auto-detects it**, so
    no manual mapping is needed.
 2. **Set two env vars:** `DEMO_MODE=true` and `RECEIPT_SIGNING_KEY=<hex>`
@@ -29,7 +29,7 @@ AgentTrace deploys as **two Vercel projects from this one monorepo**:
 | `agenttrace-api` | `apps/api` | Fastify API as a serverless function |
 | `agenttrace-dashboard` | `apps/dashboard` | Next.js dashboard |
 
-> Names are illustrative — rename the projects freely; only the env vars below
+> Names are illustrative - rename the projects freely; only the env vars below
 > need to match up.
 
 ## If you imported the repo as a single root project
@@ -38,7 +38,7 @@ A common first mistake is importing the repo with **Root Directory = the repo
 root** and no framework. Vercel then runs a generic build, finds no output, and
 fails with:
 
-> Build Failed — No Output Directory named "public" found after the Build completed.
+> Build Failed - No Output Directory named "public" found after the Build completed.
 
 This repo ships a root [`vercel.json`](../vercel.json) that resolves that case
 by building the **dashboard** from the root:
@@ -53,7 +53,7 @@ by building the **dashboard** from the root:
 ```
 
 So a root-level project deploys the dashboard out of the box. The **API** still
-needs its own project (next section) — one Vercel project builds one app.
+needs its own project (next section) - one Vercel project builds one app.
 
 > Most robust alternative: instead of relying on the root config, set each
 > project's **Root Directory** to `apps/dashboard` / `apps/api`. Then the
@@ -83,7 +83,7 @@ every path to the Fastify handler.
 > The API is serverless-only (no static frontend). Vercel still requires an
 > output directory to exist after a custom build command, so `vercel.json`
 > creates an empty `public/` (`outputDirectory: public`) purely to satisfy that
-> check — without it the build fails with *No Output Directory named "public"*.
+> check - without it the build fails with *No Output Directory named "public"*.
 
 Environment variables:
 
@@ -96,7 +96,7 @@ Environment variables:
 | `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW` | optional | defaults `1000` / `1 minute` |
 
 **Run migrations against the production database** before (or right after) the
-first deploy — serverless functions must not migrate on cold start:
+first deploy - serverless functions must not migrate on cold start:
 
 ```bash
 DATABASE_URL="<pooled-or-direct-url>" pnpm prisma migrate deploy
@@ -109,7 +109,7 @@ runtime, so the client works once generated during the build.)
 
 This almost always means **`DATABASE_URL` is not set** on the project. The
 Prisma client is constructed lazily (`apps/api/src/db.ts`), so a missing
-`DATABASE_URL` no longer crashes the function at cold start — but the API still
+`DATABASE_URL` no longer crashes the function at cold start - but the API still
 needs a database to do anything. Check liveness vs. DB readiness:
 
 ```bash
@@ -120,7 +120,7 @@ curl https://<api>.vercel.app/health
 
 If `db` is `down`: set `DATABASE_URL` to a **pooled** Postgres URL in the Vercel
 project's Environment Variables, redeploy, and run `prisma migrate deploy`
-against it. (If `/health` itself 500s, the crash is something else — inspect the
+against it. (If `/health` itself 500s, the crash is something else - inspect the
 function logs.)
 
 ### Deployment Protection
@@ -139,7 +139,7 @@ Import the same repo as a second project, **Root Directory = `apps/dashboard`**
 (framework auto-detected as Next.js). The standalone Next config already traces
 the monorepo root.
 
-Environment variables — both point at the API deployment:
+Environment variables - both point at the API deployment:
 
 | Var | Used by |
 | --- | --- |

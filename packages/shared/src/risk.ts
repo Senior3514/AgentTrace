@@ -62,7 +62,7 @@ function isExternalTarget(ev: RiskEventInput): boolean {
 /**
  * Deterministic v0 risk evaluation.
  *
- * Pure function of the run context — no randomness, no ML, no clock reads.
+ * Pure function of the run context - no randomness, no ML, no clock reads.
  * Re-running with the same input always yields the same flags in the same
  * order, which is a precondition for reproducible receipts.
  */

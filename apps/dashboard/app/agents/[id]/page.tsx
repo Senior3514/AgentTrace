@@ -29,9 +29,9 @@ export default async function AgentDetailPage({ params }: { params: { id: string
       <PageHeader title={agent.name} subtitle={agent.externalId} />
 
       <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard label="Owner" value={agent.owner?.name ?? "—"} />
+        <StatCard label="Owner" value={agent.owner?.name ?? "-"} />
         <StatCard label="Environment" value={agent.environment} />
-        <StatCard label="Framework" value={agent.framework ?? "—"} />
+        <StatCard label="Framework" value={agent.framework ?? "-"} />
         <StatCard label="Total runs" value={agent._count?.runs ?? runs.length} />
       </div>
 
@@ -65,14 +65,14 @@ export default async function AgentDetailPage({ params }: { params: { id: string
                 <td className="td">
                   <RiskChip level={run.riskLevel} />
                 </td>
-                <td className="td mono text-muted">{run._count?.events ?? "—"}</td>
+                <td className="td mono text-muted">{run._count?.events ?? "-"}</td>
                 <td className="td mono text-muted">{formatDuration(run.startedAt, run.endedAt)}</td>
                 <td className="td text-muted">{formatRelative(run.startedAt)}</td>
                 <td className="td">
                   {run.receiptHash ? (
                     <span className="mono text-2xs text-verified">{shortHash(run.receiptHash, 10)}</span>
                   ) : (
-                    <span className="text-2xs text-muted">—</span>
+                    <span className="text-2xs text-muted">-</span>
                   )}
                 </td>
               </tr>

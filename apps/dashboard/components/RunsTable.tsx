@@ -80,7 +80,7 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                       {run.agent.name}
                     </Link>
                   ) : (
-                    "—"
+                    "-"
                   )}
                 </td>
                 <td className="td">
@@ -89,7 +89,7 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                 <td className="td">
                   <RiskChip level={run.riskLevel} />
                 </td>
-                <td className="td mono text-muted">{run._count?.events ?? "—"}</td>
+                <td className="td mono text-muted">{run._count?.events ?? "-"}</td>
                 <td className="td mono text-muted">{run._count?.riskFlags ?? 0}</td>
                 <td className="td mono text-muted">{formatDuration(run.startedAt, run.endedAt)}</td>
                 <td className="td text-muted">{formatRelative(run.startedAt)}</td>
@@ -97,7 +97,7 @@ export function RunsTable({ runs }: { runs: RunRow[] }) {
                   {run.receiptHash ? (
                     <span className="mono text-2xs text-verified">{shortHash(run.receiptHash, 10)}</span>
                   ) : (
-                    <span className="text-2xs text-muted">—</span>
+                    <span className="text-2xs text-muted">-</span>
                   )}
                 </td>
               </tr>

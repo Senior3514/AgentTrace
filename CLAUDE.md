@@ -34,13 +34,13 @@ Do not build in v0:
 - Ed25519 signatures
 
 ## Repository layout
-- `apps/api` — Fastify ingestion API + receipt engine
-- `apps/dashboard` — Next.js App Router dashboard
-- `packages/shared` — enums, Zod schemas, hashing, Ed25519, risk engine, receipt types
-- `packages/sdk-ts` — `@agenttrace/sdk` client + demo
-- `prisma` — schema, migrations, seed
-- `scripts` — key generation and tooling
-- `docs` — architecture, API, receipts
+- `apps/api` - Fastify ingestion API + receipt engine
+- `apps/dashboard` - Next.js App Router dashboard
+- `packages/shared` - enums, Zod schemas, hashing, Ed25519, risk engine, receipt types
+- `packages/sdk-ts` - `@agenttrace/sdk` client + demo
+- `prisma` - schema, migrations, seed
+- `scripts` - key generation and tooling
+- `docs` - architecture, API, receipts
 
 ## Design rules
 - dark mode first
@@ -66,15 +66,15 @@ Do not build in v0:
 - Write endpoints require an API key.
 - Receipt generation is deterministic: same run → same `runHash`.
 - Volatile fields (e.g. `generatedAt`) are excluded from the hashed receipt body.
-- Risk flags are deterministic — no randomness, no clock reads, no ML.
+- Risk flags are deterministic - no randomness, no clock reads, no ML.
 - Ed25519 primitives live in `packages/shared` so the SDK can verify without the API.
 
 ## Key files
-- `packages/shared/src/hashing.ts` — canonicalization + SHA-256 chaining
-- `packages/shared/src/risk.ts` — deterministic risk engine
-- `apps/api/src/lib/receipt-engine.ts` — receipt build + verify
-- `apps/api/src/services/finalize.ts` — finalize transaction
-- `apps/api/src/services/events.ts` — append ordering rules
+- `packages/shared/src/hashing.ts` - canonicalization + SHA-256 chaining
+- `packages/shared/src/risk.ts` - deterministic risk engine
+- `apps/api/src/lib/receipt-engine.ts` - receipt build + verify
+- `apps/api/src/services/finalize.ts` - finalize transaction
+- `apps/api/src/services/events.ts` - append ordering rules
 
 ## Conventions
 - The API runs under `tsx` (dev and containers) because the workspace consumes

@@ -56,7 +56,7 @@ describe("demo seed dataset", () => {
     expect(types).toContain("policy_violation");
   });
 
-  it("resetDemoData is idempotent — re-seeding yields a fresh single dataset", async () => {
+  it("resetDemoData is idempotent - re-seeding yields a fresh single dataset", async () => {
     await resetDemoData();
     await resetDemoData();
     expect(await prisma.owner.count()).toBe(1);

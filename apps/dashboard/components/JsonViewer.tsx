@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { CopyButton } from "./CopyButton";
 
-// Lightweight syntax-highlighted JSON viewer. No external deps — we tokenize
+// Lightweight syntax-highlighted JSON viewer. No external deps - we tokenize
 // the pretty-printed string and color keys, strings, numbers and literals.
 function highlight(json: string): string {
   return json

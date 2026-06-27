@@ -102,7 +102,7 @@ export function receiptVersionOf(receipt: Receipt): string {
 /**
  * Independently verify a receipt: recompute the run hash from the body and
  * check the Ed25519 signature against the embedded public key. Requires no
- * server, no private key, and no database — only the receipt itself.
+ * server, no private key, and no database - only the receipt itself.
  *
  * Unknown receipt versions are rejected (`versionSupported: false`, `valid:
  * false`) rather than verified under assumptions that may not hold for a format

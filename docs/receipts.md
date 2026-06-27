@@ -15,7 +15,7 @@ deterministic, signed, and verifiable without the server.
   eventHash = SHA-256( canonical(eventCore) + "." + (prevEventHash ?? "") )
   ```
 
-  This forms a tamper-evident chain — changing any earlier event invalidates
+  This forms a tamper-evident chain - changing any earlier event invalidates
   every hash after it. Database ids, `createdAt`, and the chain pointers
   themselves are excluded from `eventCore`.
 - **Run hash** is `SHA-256(canonical(receiptBody))`. The body excludes volatile
@@ -88,5 +88,5 @@ fails.
 
 Generate a stable keypair with `pnpm keys:generate` and set
 `RECEIPT_SIGNING_KEY` (and optionally `RECEIPT_PUBLIC_KEY`). Without a configured
-key, the API generates an **ephemeral** key in development and warns — receipts
+key, the API generates an **ephemeral** key in development and warns - receipts
 signed with it will not verify after a restart. In production a key is required.

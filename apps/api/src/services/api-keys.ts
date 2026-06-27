@@ -18,12 +18,12 @@ export async function createApiKey(ownerId: string, name: string) {
     name: record.name,
     prefix: record.prefix,
     createdAt: record.createdAt,
-    // Shown once — never retrievable again.
+    // Shown once - never retrievable again.
     key: plaintext,
   };
 }
 
-/** List an owner's keys (metadata only — never the secret). */
+/** List an owner's keys (metadata only - never the secret). */
 export async function listApiKeys(ownerId: string) {
   const owner = await prisma.owner.findUnique({ where: { id: ownerId } });
   if (!owner) throw notFound(`Owner ${ownerId} not found`);

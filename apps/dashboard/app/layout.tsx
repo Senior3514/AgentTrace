@@ -6,7 +6,7 @@ import { NavLink } from "../components/NavLink";
 import { ApiStatus } from "../components/ApiStatus";
 
 export const metadata: Metadata = {
-  title: "AgentTrace — execution evidence for AI agents",
+  title: "AgentTrace - execution evidence for AI agents",
   description:
     "AgentTrace records runtime events, binds them to policy and approval context, and generates signed receipts for finalized agent runs.",
 };
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </main>
         <footer className="mx-auto max-w-[1400px] px-5 py-4 text-2xs text-muted">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3">
-            <span>AgentTrace — execution evidence layer for AI agents</span>
+            <span>AgentTrace - execution evidence layer for AI agents</span>
             <span className="hidden sm:inline">·</span>
             <span>deterministic receipts · Ed25519 signatures · tamper-evident</span>
           </div>

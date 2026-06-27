@@ -5,19 +5,19 @@ receipt**: a run is created, the model response + tool calls are recorded as
 events (mapped to action classes / mutation flags), and the run is finalized.
 
 The OpenAI → AgentTrace **mapping is pure and deterministic** (`src/mapping.ts`)
-— no clock, no randomness — so it is unit-tested offline with recorded OpenAI
+- no clock, no randomness - so it is unit-tested offline with recorded OpenAI
 responses. The AgentTrace side (run, events, receipt, verification) is real.
 
 ## Tool classification (deterministic, ordered)
 
 | Tool name matches | actionClass | mutates | irreversible |
 | --- | --- | --- | --- |
-| `secret`, `credential`, `token`, `vault`, `api_key` | `SECRET_ACCESS` | – | – |
+| `secret`, `credential`, `token`, `vault`, `api_key` | `SECRET_ACCESS` | - | - |
 | `delete`, `drop`, `destroy`, `purge`, `terminate`, `revoke` | `WRITE` | ✓ | ✓ |
-| `exec`, `run_`, `shell`, `code_interpreter`, `python`, `sandbox` | `CODE_EXECUTION` | – | – |
-| `send`, `create`, `update`, `deploy`, `merge`, `push`, `charge`, … | `EXTERNAL_CALL` | ✓ | – |
-| `read`, `get`, `list`, `search`, `fetch`, `query`, … | `READ` | – | – |
-| (anything else) | `OTHER` | – | – |
+| `exec`, `run_`, `shell`, `code_interpreter`, `python`, `sandbox` | `CODE_EXECUTION` | - | - |
+| `send`, `create`, `update`, `deploy`, `merge`, `push`, `charge`, … | `EXTERNAL_CALL` | ✓ | - |
+| `read`, `get`, `list`, `search`, `fetch`, `query`, … | `READ` | - | - |
+| (anything else) | `OTHER` | - | - |
 
 ## Usage
 
@@ -34,7 +34,7 @@ await session.recordCompletion(completion);
 await session.recordToolResult({ toolName: "create_pull_request", isError: false });
 const { receipt, riskLevel } = await session.finish();
 
-at.verifyReceipt(receipt); // { valid: true, … } — offline Ed25519
+at.verifyReceipt(receipt); // { valid: true, … } - offline Ed25519
 ```
 
 ## Runnable example
@@ -46,7 +46,7 @@ AGENTTRACE_API_URL=http://localhost:4000 AGENTTRACE_API_KEY=dev_key_local \
 ```
 
 - With `OPENAI_API_KEY` set, the example calls the **real** OpenAI API.
-- Without it, the example uses a **recorded** OpenAI response — but the
+- Without it, the example uses a **recorded** OpenAI response - but the
   AgentTrace run, receipt, and verification are still fully real. The script
   prints which path it used.
 

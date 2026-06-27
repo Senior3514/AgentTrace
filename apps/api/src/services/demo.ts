@@ -180,7 +180,7 @@ export async function seedDemoData(): Promise<SeedSummary> {
 
   const runs: SeededRun[] = [];
 
-  // (1) Clean happy path — read + sandboxed test, no external write/secret.
+  // (1) Clean happy path - read + sandboxed test, no external write/secret.
   runs.push(
     await buildRun({
       agentId: codingAgent.id,
@@ -198,7 +198,7 @@ export async function seedDemoData(): Promise<SeedSummary> {
     }),
   );
 
-  // (2) Policy violation — unapproved EXTERNAL_CALL + secret access.
+  // (2) Policy violation - unapproved EXTERNAL_CALL + secret access.
   runs.push(
     await buildRun({
       agentId: codingAgent.id,

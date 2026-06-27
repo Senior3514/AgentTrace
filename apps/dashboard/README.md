@@ -1,7 +1,7 @@
 # @agenttrace/dashboard
 
 Next.js (App Router) dashboard for AgentTrace. Dark-first, security/observability
-aesthetic. A pure consumer of the AgentTrace API — it never touches the database.
+aesthetic. A pure consumer of the AgentTrace API - it never touches the database.
 
 ## Run
 
@@ -32,7 +32,7 @@ Defined in `tailwind.config.ts`. Palette: `bg #0A0D10`, `surface #11161B`,
 ## Notes
 
 - The receipt page verifies the Ed25519 signature server-side using
-  `verifyReceipt` from `@agenttrace/shared` — no trust in the API required.
+  `verifyReceipt` from `@agenttrace/shared` - no trust in the API required.
 - `next.config.js` adds a webpack `extensionAlias` so the shared package's ESM
   `.js` specifiers resolve to its `.ts` sources.
 

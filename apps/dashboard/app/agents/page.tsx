@@ -64,13 +64,13 @@ export default async function AgentsPage() {
                   </Link>
                 </td>
                 <td className="td mono text-muted">{agent.externalId}</td>
-                <td className="td text-muted">{agent.owner?.name ?? "—"}</td>
+                <td className="td text-muted">{agent.owner?.name ?? "-"}</td>
                 <td className="td">
                   <span className="rounded bg-surface-2 px-1.5 py-0.5 text-2xs text-muted">
                     {agent.environment}
                   </span>
                 </td>
-                <td className="td text-muted">{agent.framework ?? "—"}</td>
+                <td className="td text-muted">{agent.framework ?? "-"}</td>
                 <td className="td mono text-muted">{agent._count?.runs ?? 0}</td>
                 <td className="td text-muted">{formatRelative(agent.createdAt)}</td>
               </tr>

@@ -1,5 +1,5 @@
 // Seed a realistic set of agent runs and finalize them into signed receipts.
-// Run with: pnpm seed   (idempotent — clears existing data, then re-seeds)
+// Run with: pnpm seed   (idempotent - clears existing data, then re-seeds)
 import { prisma } from "../apps/api/src/db.js";
 import { resetDemoData } from "../apps/api/src/services/demo.js";
 

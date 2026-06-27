@@ -188,9 +188,9 @@ export interface RunVerification {
  *
  * Recomputes the canonical run hash from the *current* persisted events and
  * compares it to the hash sealed at finalize time. If any event was mutated
- * after finalization, the recomputed hash diverges and `hashValid` is false —
+ * after finalization, the recomputed hash diverges and `hashValid` is false -
  * this is the tamper-evidence property (it detects edits to the *reported*
- * trail; it does not prove the trail is complete — see docs/threat-model.md).
+ * trail; it does not prove the trail is complete - see docs/threat-model.md).
  * The Ed25519 signature is also checked against the sealed hash.
  */
 export async function getRunVerification(runId: string): Promise<RunVerification> {

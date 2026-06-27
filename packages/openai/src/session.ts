@@ -88,7 +88,7 @@ export class TracedSession {
   }
 
   private requireRun(): string {
-    if (!this.runId) throw new Error("TracedSession not started — call start() first");
+    if (!this.runId) throw new Error("TracedSession not started - call start() first");
     return this.runId;
   }
 

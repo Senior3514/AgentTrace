@@ -48,7 +48,7 @@ function serialize(value: unknown): string {
     );
     return `{${parts.join(",")}}`;
   }
-  // undefined / function / symbol — should be filtered by callers; fall back.
+  // undefined / function / symbol - should be filtered by callers; fall back.
   return "null";
 }
 

@@ -16,11 +16,11 @@ Requires `DATABASE_URL`. See the root `.env.example`.
 
 | Var | Default | Notes |
 | --- | ------- | ----- |
-| `DATABASE_URL` | — | PostgreSQL connection string (required) |
+| `DATABASE_URL` | - | PostgreSQL connection string (required) |
 | `API_HOST` | `0.0.0.0` | |
 | `API_PORT` | `4000` | |
 | `API_KEYS` | `dev_key_local` | comma-separated global/admin keys; per-owner keys are minted via the API |
-| `RECEIPT_SIGNING_KEY` | — | Ed25519 seed (hex). Required in production. |
+| `RECEIPT_SIGNING_KEY` | - | Ed25519 seed (hex). Required in production. |
 | `RECEIPT_PUBLIC_KEY` | derived | optional; derived from the signing key if omitted |
 | `RATE_LIMIT_MAX` | `1000` | max requests per window, per client IP |
 | `RATE_LIMIT_WINDOW` | `1 minute` | rate-limit window |

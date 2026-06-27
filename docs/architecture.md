@@ -1,6 +1,6 @@
 # Architecture
 
-AgentTrace is a thin, opinionated evidence layer. It does not run agents — it
+AgentTrace is a thin, opinionated evidence layer. It does not run agents - it
 records what they did and makes that record verifiable.
 
 ## Components
@@ -40,8 +40,8 @@ records what they did and makes that record verifiable.
 
 See `prisma/schema.prisma`. Key constraints:
 
-- `events(runId, seqNo)` unique — sequence numbers are unique within a run.
-- `runs(agentId, runExternalId)` unique — idempotent external run ids.
+- `events(runId, seqNo)` unique - sequence numbers are unique within a run.
+- `runs(agentId, runExternalId)` unique - idempotent external run ids.
 - `policies(ownerId, name, version)` unique.
 
 ## Lifecycle

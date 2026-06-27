@@ -9,8 +9,8 @@ import {
 
 // Ed25519 primitives shared by the API (signing) and SDK (verification).
 //
-// Keys travel as raw 32-byte hex strings — a seed for the private key and raw
-// public key bytes for verification — which are easy to store in env vars. We
+// Keys travel as raw 32-byte hex strings - a seed for the private key and raw
+// public key bytes for verification - which are easy to store in env vars. We
 // wrap them in the DER structures Node's crypto expects.
 
 const PRIV_PREFIX = Buffer.from("302e020100300506032b657004220420", "hex"); // PKCS8 header

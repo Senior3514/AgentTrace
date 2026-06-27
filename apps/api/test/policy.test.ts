@@ -41,7 +41,7 @@ describe("deterministic policy evaluation", () => {
     expect(approved).toHaveLength(0);
   });
 
-  it("is deterministic — same input yields identical output", () => {
+  it("is deterministic - same input yields identical output", () => {
     const rules = { denyActionClasses: ["CODE_EXECUTION"], requireApprovalFor: [], forbidIrreversibleWithoutApproval: true };
     const events = [
       ev({ seqNo: 0, actionClass: "CODE_EXECUTION" }),

@@ -130,8 +130,8 @@ function EventDetail({
         <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           <Field label="Actor" value={`${event.actorType}${event.actorId ? ` · ${event.actorId}` : ""}`} />
           <Field label="Timestamp" value={formatDateTime(event.timestamp)} />
-          <Field label="Tool" value={event.toolName ?? "—"} mono />
-          <Field label="Target" value={event.targetSystem ?? "—"} mono />
+          <Field label="Tool" value={event.toolName ?? "-"} mono />
+          <Field label="Target" value={event.targetSystem ?? "-"} mono />
           <Field label="Mutates state" value={event.mutatesState ? "yes" : "no"} />
           <Field label="Irreversible" value={event.irreversible ? "yes" : "no"} />
         </dl>
@@ -209,7 +209,7 @@ function HashRow({
     <div className="flex items-center gap-2 text-2xs">
       <span className="w-12 uppercase tracking-wide text-muted">{label}</span>
       <span className={`mono truncate ${highlight ? "text-verified" : "text-muted"}`}>
-        {value ?? "—"}
+        {value ?? "-"}
       </span>
       {value && <CopyButton value={value} />}
     </div>

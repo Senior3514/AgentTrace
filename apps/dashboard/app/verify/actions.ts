@@ -18,7 +18,7 @@ export interface VerifyState {
 
 /**
  * Verify a pasted receipt entirely on the dashboard's own server using the
- * shared Ed25519/SHA-256 primitives — no AgentTrace API, database, or private
+ * shared Ed25519/SHA-256 primitives - no AgentTrace API, database, or private
  * key involved. This is the "verify anywhere" property made interactive.
  */
 export async function verifyReceiptAction(
@@ -39,7 +39,7 @@ export async function verifyReceiptAction(
   if (!r || typeof r !== "object" || !r.body || !r.runHash || !r.signature || !r.signedBy) {
     return {
       ok: false,
-      error: "Not a receipt — expected fields: body, runHash, signature, signedBy.",
+      error: "Not a receipt - expected fields: body, runHash, signature, signedBy.",
     };
   }
 

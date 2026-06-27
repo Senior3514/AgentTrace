@@ -1,4 +1,4 @@
-// Compact, observability-style summary tiles. Server component — pure render.
+// Compact, observability-style summary tiles. Server component - pure render.
 
 export interface SummaryTile {
   label: string;

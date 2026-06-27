@@ -3,7 +3,7 @@ import { ActionClass, RiskFlagType, RiskSeverity } from "./enums.js";
 import type { ComputedRiskFlag, RiskEventInput } from "./risk.js";
 
 // Deterministic, structured policy rules. This is intentionally NOT a policy
-// authoring system — it is a small, fixed rule set evaluated at finalize so
+// authoring system - it is a small, fixed rule set evaluated at finalize so
 // actions can be bound to an explicit policy decision. No DSL, no scripting.
 
 const actionClassEnum = z.enum(Object.values(ActionClass) as [string, ...string[]]);

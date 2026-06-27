@@ -52,10 +52,10 @@ jobs:
       - name: Typecheck
         run: pnpm -r typecheck
 
-      - name: Test (API — needs Postgres)
+      - name: Test (API - needs Postgres)
         run: pnpm --filter @agenttrace/api test
 
-      - name: Test (OpenAI adapter — offline mapping)
+      - name: Test (OpenAI adapter - offline mapping)
         run: pnpm --filter @agenttrace/openai test
 
   build-dashboard:

@@ -26,8 +26,8 @@ function extractKey(request: FastifyRequest): string | undefined {
  * Pre-handler enforcing API key auth on write routes.
  *
  * Two kinds of key are accepted:
- *  - a configured global key (API_KEYS) — admin/bootstrap, not tenant-scoped
- *  - a per-owner key minted via POST /v1/owners/:id/api-keys — sets request.ownerId
+ *  - a configured global key (API_KEYS) - admin/bootstrap, not tenant-scoped
+ *  - a per-owner key minted via POST /v1/owners/:id/api-keys - sets request.ownerId
  *
  * Bearer or x-api-key header. Global comparison is constant-time.
  */

@@ -1,4 +1,4 @@
-# Quickstart — from clone to a verified receipt
+# Quickstart - from clone to a verified receipt
 
 This is the copy-paste path from a fresh clone to a **signed receipt that
 verifies**. Two ways: raw `curl`, and the TypeScript SDK. Both hit the real
@@ -22,13 +22,13 @@ The API container applies migrations on boot. Seed four realistic runs:
 docker compose exec api pnpm seed
 ```
 
-`pnpm seed` creates **1 owner, 2 agents, and 4 finalized runs** — a clean happy
+`pnpm seed` creates **1 owner, 2 agents, and 4 finalized runs** - a clean happy
 path, a policy violation, an unapproved irreversible action, and an approved
-high-risk merge — each with a verifiable receipt. The dashboard is then
+high-risk merge - each with a verifiable receipt. The dashboard is then
 non-empty out of the box.
 
 > **DEMO_MODE**: set `DEMO_MODE=true` and the API auto-seeds an empty database
-> on boot, and exposes `POST /v1/demo/reset` (guarded — it refuses to run unless
+> on boot, and exposes `POST /v1/demo/reset` (guarded - it refuses to run unless
 > `DEMO_MODE=true`, so it can never wipe a real database).
 
 ## 1. Create a verified receipt with `curl`
@@ -94,7 +94,7 @@ Receipt verification: { hashValid: true, signatureValid: true, valid: true }
 ```
 
 The SDK verifies the receipt locally using the Ed25519 primitives in
-`@agenttrace/shared` — **without calling the API** — so a receipt holder can
+`@agenttrace/shared` - **without calling the API** - so a receipt holder can
 verify offline. There is also an offline CLI: `pnpm verify:receipt <file>`.
 
 ## What you just proved

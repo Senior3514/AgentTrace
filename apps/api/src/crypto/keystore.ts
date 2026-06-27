@@ -28,7 +28,7 @@ export function getKeystore(): { privateKeyHex: string; publicKeyHex: string } {
   const pair = generateKeyPair();
   // eslint-disable-next-line no-console
   console.warn(
-    "[agenttrace] RECEIPT_SIGNING_KEY not set — using an EPHEMERAL signing key. " +
+    "[agenttrace] RECEIPT_SIGNING_KEY not set - using an EPHEMERAL signing key. " +
       "Receipts will not verify across restarts. Run `pnpm keys:generate` for a stable key.",
   );
   cached = { privateKeyHex: pair.privateKeyHex, publicKeyHex: pair.publicKeyHex };
