@@ -60,7 +60,7 @@ export async function appendEvent(input: CreateEventInput) {
       },
     });
   } catch (err: unknown) {
-    // Unique (runId, seqNo) violation — concurrent append of the same seqNo.
+    // Unique (runId, seqNo) violation - concurrent append of the same seqNo.
     if (typeof err === "object" && err && (err as { code?: string }).code === "P2002") {
       throw conflict(`Sequence number ${input.seqNo} already exists for run ${input.runId}`);
     }

@@ -48,7 +48,7 @@ export function VerifyForm() {
         <div className="mt-3 flex items-center gap-3">
           <SubmitButton />
           <span className="text-2xs text-muted">
-            Verified locally on this server — no API, database, or private key.
+            Verified locally on this server - no API, database, or private key.
           </span>
         </div>
       </form>

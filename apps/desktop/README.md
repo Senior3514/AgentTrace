@@ -6,11 +6,11 @@ pure web app; this only frames it.
 
 ## What it does
 
-- **First run shows a Connect screen** — paste your AgentTrace dashboard URL
+- **First run shows a Connect screen** - paste your AgentTrace dashboard URL
   (e.g. your Vercel deployment), *Test connection*, then *Connect*. The choice is
   remembered; subsequent launches open straight into your dashboard.
 - Opens the dashboard in a native window (`contextIsolation` on,
-  `nodeIntegration` off, `sandbox` on — no Node APIs exposed to the page; a small
+  `nodeIntegration` off, `sandbox` on - no Node APIs exposed to the page; a small
   audited IPC bridge powers only the connect screen).
 - Opens external links (GitHub, the API host) in the system browser.
 - Single-instance; native menu (*File → Connect to a deployment…*, reload,
@@ -52,6 +52,6 @@ to brand the app.
 
 > Note on the Electron binary: pnpm ignores Electron's install script by
 > default, so a plain `pnpm install` (e.g. in CI) does **not** download the
-> ~150 MB runtime — typecheck/build of this package work without it. To actually
+> ~150 MB runtime - typecheck/build of this package work without it. To actually
 > launch or package the app, approve the download once with
 > `pnpm approve-builds` (or `pnpm rebuild electron`).

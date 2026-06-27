@@ -6,7 +6,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../../..");
 
 // Push the Prisma schema to the (test) database before the suite runs. Uses
-// whatever DATABASE_URL is configured — point this at a disposable database.
+// whatever DATABASE_URL is configured - point this at a disposable database.
 export default function setup(): void {
   if (!process.env.DATABASE_URL) {
     throw new Error(

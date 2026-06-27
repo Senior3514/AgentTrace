@@ -7,7 +7,7 @@ import { resolveDatabaseUrl } from "./src/lib/database-url.js";
 
 const url = resolveDatabaseUrl();
 if (!url) {
-  console.log("AgentTrace: no database env var found — skipping migrations.");
+  console.log("AgentTrace: no database env var found - skipping migrations.");
   process.exit(0);
 }
 

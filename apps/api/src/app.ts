@@ -21,8 +21,8 @@ export async function buildApp(opts: BuildOptions = {}): Promise<FastifyInstance
   });
 
   // Security headers. Configured for a cross-origin JSON API: no CSP (we serve
-  // no HTML) and a cross-origin resource policy so the dashboard — typically a
-  // different origin — can still read responses. Keeps nosniff, frameguard,
+  // no HTML) and a cross-origin resource policy so the dashboard - typically a
+  // different origin - can still read responses. Keeps nosniff, frameguard,
   // HSTS, referrer-policy, etc.
   await app.register(helmet, {
     contentSecurityPolicy: false,
@@ -63,7 +63,7 @@ export async function buildApp(opts: BuildOptions = {}): Promise<FastifyInstance
     return reply.code(500).send({ error: "internal_error", message: "Internal server error" });
   });
 
-  // Liveness + DB readiness. Always 200 when the function is alive — the `db`
+  // Liveness + DB readiness. Always 200 when the function is alive - the `db`
   // field reports connectivity without failing, so a misconfigured/absent
   // DATABASE_URL is visible here instead of crashing the function.
   app.get("/health", async () => {

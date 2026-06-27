@@ -13,7 +13,7 @@ const fixture = JSON.parse(
   readFileSync(fileURLToPath(new URL("./fixtures/tool-calls.json", import.meta.url)), "utf8"),
 ) as OpenAIChatCompletion;
 
-describe("classifyTool — deterministic", () => {
+describe("classifyTool - deterministic", () => {
   const cases: Array<[string, string, boolean, boolean]> = [
     // name, actionClass, mutatesState, irreversible
     ["search_repository", "READ", false, false],
@@ -70,7 +70,7 @@ describe("mapToolResult", () => {
   });
 });
 
-describe("mapChatCompletion — from a recorded OpenAI response", () => {
+describe("mapChatCompletion - from a recorded OpenAI response", () => {
   it("emits a model_response event then one event per tool call, in order", () => {
     const events = mapChatCompletion(fixture);
     // 1 model_response + 5 tool calls

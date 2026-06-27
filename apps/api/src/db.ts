@@ -5,7 +5,7 @@ import { ensureDatabaseUrlEnv } from "./lib/database-url.js";
 //
 // Prisma validates the datasource env (DATABASE_URL) when the client is
 // *constructed*. Constructing at module import means a missing DATABASE_URL
-// crashes the whole process at load — on Vercel that surfaces as
+// crashes the whole process at load - on Vercel that surfaces as
 // FUNCTION_INVOCATION_FAILED on every request, including DB-free routes like
 // /health. By deferring construction to first use, the function boots cleanly:
 // DB-free routes respond, and DB routes fail with a clean error (mapped to a

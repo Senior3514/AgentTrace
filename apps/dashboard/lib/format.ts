@@ -1,5 +1,5 @@
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "-";
   const d = new Date(value);
   return d.toLocaleString("en-US", {
     year: "numeric",
@@ -13,7 +13,7 @@ export function formatDateTime(value: string | null | undefined): string {
 }
 
 export function formatRelative(value: string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "-";
   const diff = Date.now() - new Date(value).getTime();
   const s = Math.round(diff / 1000);
   if (s < 60) return `${s}s ago`;
@@ -26,7 +26,7 @@ export function formatRelative(value: string | null | undefined): string {
 }
 
 export function formatDuration(start: string, end: string | null): string {
-  if (!end) return "—";
+  if (!end) return "-";
   const ms = new Date(end).getTime() - new Date(start).getTime();
   const s = Math.round(ms / 1000);
   if (s < 60) return `${s}s`;
@@ -36,6 +36,6 @@ export function formatDuration(start: string, end: string | null): string {
 }
 
 export function shortHash(hash: string | null | undefined, len = 12): string {
-  if (!hash) return "—";
+  if (!hash) return "-";
   return hash.length <= len ? hash : `${hash.slice(0, len)}…`;
 }

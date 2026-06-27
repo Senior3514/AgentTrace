@@ -5,7 +5,7 @@ import { buildReceipt, type RunBundle } from "../src/lib/receipt-engine.js";
 import { getKeystore } from "../src/crypto/keystore.js";
 import { verifyReceipt } from "@agenttrace/shared";
 
-// Real Ed25519 keys + real hashing/signing — nothing is mocked here.
+// Real Ed25519 keys + real hashing/signing - nothing is mocked here.
 const { privateKeyHex, publicKeyHex } = getKeystore();
 
 const ACTION_CLASSES = ["READ", "WRITE", "EXTERNAL_CALL", "CODE_EXECUTION", "SECRET_ACCESS", "CONTROL", "OTHER"] as const;
@@ -76,7 +76,7 @@ function bundleOf(events: Event[]): RunBundle {
 }
 const hashOf = (events: Event[]) => buildReceipt(bundleOf(events), privateKeyHex, publicKeyHex).receipt.runHash;
 
-describe("receipt engine — property based", () => {
+describe("receipt engine - property based", () => {
   it("is deterministic: the same run finalized repeatedly yields identical hash AND signature", () => {
     fc.assert(
       fc.property(eventListArb, (events) => {
@@ -253,7 +253,7 @@ function sigWith(approvals: Approval[], riskFlags: RiskFlag[]): string {
 }
 const rotate = <T>(xs: T[]): T[] => (xs.length ? [...xs.slice(1), xs[0]!] : xs);
 
-describe("receipt engine — approvals/riskFlags ordering determinism", () => {
+describe("receipt engine - approvals/riskFlags ordering determinism", () => {
   it("hash + signature are invariant to approval/riskFlag input order (incl. colliding timestamps & orphans)", () => {
     fc.assert(
       fc.property(approvalArb, riskFlagArb, (approvals, riskFlags) => {

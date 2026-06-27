@@ -79,7 +79,7 @@ export default function LandingPage() {
           {[
             {
               t: "Verification, not chat",
-              d: "The hard problem in agentic AI is provenance and verifiable execution — a layer that returns proof of what ran.",
+              d: "The hard problem in agentic AI is provenance and verifiable execution - a layer that returns proof of what ran.",
             },
             {
               t: "Actions are consequential",

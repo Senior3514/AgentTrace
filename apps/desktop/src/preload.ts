@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 // Secure bridge between the welcome/connect screen and the main process. No Node
-// APIs are exposed to web content — only these explicit, audited calls.
+// APIs are exposed to web content - only these explicit, audited calls.
 contextBridge.exposeInMainWorld("agenttrace", {
   isDesktop: true,
   platform: process.platform,

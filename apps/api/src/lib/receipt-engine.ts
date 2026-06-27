@@ -40,7 +40,7 @@ export interface BuiltReceipt {
 
 /**
  * The deterministic core of an event. Only stable, evidence-bearing fields are
- * folded into the hash — database ids, createdAt timestamps and the chain
+ * folded into the hash - database ids, createdAt timestamps and the chain
  * pointers themselves are excluded so the hash describes *what happened*, not
  * how it was stored.
  */
@@ -137,8 +137,8 @@ export function buildReceipt(bundle: RunBundle, signingKeyHex: string, publicKey
   const byStr = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
   // Total ordering over content fields (all of which are in the hashed body) so
-  // the same run always yields byte-identical approvals/riskFlags — and thus the
-  // same runHash — regardless of the order rows came back from the database.
+  // the same run always yields byte-identical approvals/riskFlags - and thus the
+  // same runHash - regardless of the order rows came back from the database.
   // `approvedAt` stays the primary key (unchanged for the common distinct case);
   // the rest break ties that were previously resolved by nondeterministic scan
   // order (approvedAt defaults to now() and routinely collides).

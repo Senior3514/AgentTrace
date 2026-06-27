@@ -8,7 +8,7 @@ export default function VerifyPage() {
     <>
       <PageHeader
         title="Verify a receipt"
-        subtitle="Paste any AgentTrace receipt to check its integrity and signature — independently, with no API or private key."
+        subtitle="Paste any AgentTrace receipt to check its integrity and signature - independently, with no API or private key."
       />
       <VerifyForm />
     </>

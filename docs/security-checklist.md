@@ -3,7 +3,7 @@
 AgentTrace integrations should be designed so that every meaningful agent action
 is **attributable, bounded, reviewable, and reconstructable** after the fact.
 Production risk comes from the interaction of identity, memory, tool use, and
-runtime permissions — not from prompt injection alone.
+runtime permissions - not from prompt injection alone.
 
 ## Scope
 
@@ -29,7 +29,7 @@ authorization, provenance, telemetry hygiene, and containment.
 - [ ] Read operations and write operations are classified separately.
 - [ ] Irreversible or high-impact actions require additional checks or approval.
 - [ ] Each tool call enforces authorization at execution time, not only at setup time.
-- [ ] Resource scoping is narrow — per repo, per project, per customer, or per environment.
+- [ ] Resource scoping is narrow - per repo, per project, per customer, or per environment.
 
 > In AgentTrace: classify each event with `actionClass` (`READ | WRITE |
 > EXTERNAL_CALL | CODE_EXECUTION | SECRET_ACCESS | …`), and set `mutatesState`
@@ -39,7 +39,7 @@ authorization, provenance, telemetry hygiene, and containment.
 
 ## Prompt, context, and memory safety
 
-- [ ] External content is treated as untrusted by default — documents, webpages, email, retrieved context, API responses.
+- [ ] External content is treated as untrusted by default - documents, webpages, email, retrieved context, API responses.
 - [ ] Retrieved context is labeled by source and trust tier before it influences action decisions.
 - [ ] System instructions are separated from retrieved or user-supplied content.
 - [ ] Memory writes are constrained and reviewed for sensitive workflows.
@@ -93,7 +93,7 @@ less ambiguity.
 - [ ] Retention periods for sensitive traces and artifacts are defined and enforced.
 
 > In AgentTrace: prefer `inputHash` / `outputHash` over raw payloads. Receipts
-> embed hashes, not content — so a receipt proves *what happened* without
+> embed hashes, not content - so a receipt proves *what happened* without
 > leaking the underlying data.
 
 ## Runtime controls and containment
@@ -102,13 +102,13 @@ less ambiguity.
 - [ ] There is a kill switch or containment mechanism for suspicious or out-of-scope behavior.
 - [ ] Agents cannot continue executing after a policy violation without explicit override.
 - [ ] Finalized runs are tamper-evident from an audit perspective (later edits
-      are *detectable*, not prevented — see the [threat model](threat-model.md)).
+      are *detectable*, not prevented - see the [threat model](threat-model.md)).
 - [ ] Integrity checks exist for event ordering and receipt generation.
 
 > In AgentTrace: appends to a non-`RUNNING` run are rejected, finalize verifies
 > gap-free sequence continuity, and every finalized run produces a signed,
 > hash-chained receipt. These are enforced invariants, not conventions. They
-> cover the *reported* trail only — AgentTrace does not prove completeness; see
+> cover the *reported* trail only - AgentTrace does not prove completeness; see
 > the [threat model](threat-model.md).
 
 ## Validation before production
@@ -124,10 +124,10 @@ less ambiguity.
 A production agent should not go live unless the integrating team can answer four
 questions for any important action:
 
-1. **Who authorized it?** — owner + approval bound to the event
-2. **What context influenced it?** — artifacts + provenance
-3. **What system did it touch?** — target system + action class
-4. **What evidence proves it occurred under the intended policy boundary?** — signed receipt + policy hash
+1. **Who authorized it?** - owner + approval bound to the event
+2. **What context influenced it?** - artifacts + provenance
+3. **What system did it touch?** - target system + action class
+4. **What evidence proves it occurred under the intended policy boundary?** - signed receipt + policy hash
 
 If all four are answerable from recorded AgentTrace evidence alone, the
 integration meets the baseline.

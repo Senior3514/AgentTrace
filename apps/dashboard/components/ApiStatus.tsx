@@ -15,7 +15,7 @@ const DOT: Record<State, string> = {
 
 /**
  * Live API reachability indicator. Useful when the dashboard and API are
- * deployed as separate Vercel projects — confirms cross-origin connectivity.
+ * deployed as separate Vercel projects - confirms cross-origin connectivity.
  */
 export function ApiStatus() {
   const [state, setState] = useState<State>("checking");

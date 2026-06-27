@@ -10,7 +10,7 @@ finalized runs into **signed, independently verifiable receipts**.
 > Finalized runs must produce verifiable receipts.
 
 A receipt proves the **integrity and authenticity of the event trail the agent
-reported** — not that the trail is **complete**. Read the
+reported** - not that the trail is **complete**. Read the
 [**threat model**](docs/threat-model.md) for the precise scope before relying on
 it; it is the authoritative statement of what a receipt does and does not prove.
 
@@ -25,7 +25,7 @@ it; it is the authoritative statement of what a receipt does and does not prove.
 | Dashboard | `apps/dashboard` | Next.js App Router. Agents, runs, event timeline, signed-receipt viewer with on-page verification. |
 | Shared package | `packages/shared` | Enums, Zod schemas, canonical hashing, Ed25519, deterministic risk engine, receipt types. |
 | TypeScript SDK | `packages/sdk-ts` | `@agenttrace/sdk` typed client + local receipt verification + coding-agent demo. |
-| OpenAI adapter | `packages/openai` | `@agenttrace/openai` — wrap an OpenAI tool-calling session into a signed receipt. |
+| OpenAI adapter | `packages/openai` | `@agenttrace/openai` - wrap an OpenAI tool-calling session into a signed receipt. |
 | Schema + seed | `prisma` | PostgreSQL schema, migrations, realistic seed run. |
 
 ## Architecture
@@ -82,7 +82,7 @@ The API container applies migrations on boot. Seed four realistic runs with:
 docker compose exec api pnpm seed
 ```
 
-New here? Follow [`docs/quickstart.md`](docs/quickstart.md) — clone → seed →
+New here? Follow [`docs/quickstart.md`](docs/quickstart.md) - clone → seed →
 create a run → finalize → **a receipt that verifies** (`curl` and SDK).
 
 ## Deploy (Vercel)
@@ -106,7 +106,7 @@ AGENTTRACE_API_URL=http://localhost:4000 AGENTTRACE_API_KEY=dev_key_local \
 
 ## Verify a receipt offline
 
-No server, database, or private key required — just the receipt JSON:
+No server, database, or private key required - just the receipt JSON:
 
 ```bash
 curl -s http://localhost:4000/v1/runs/<id>/receipt > receipt.json
@@ -134,17 +134,17 @@ Writes require an API key (`Authorization: Bearer <key>` or `x-api-key`).
 | POST | `/v1/owners` `/v1/agents` `/v1/policies` | ✅ |
 | POST | `/v1/runs` `/v1/events` `/v1/approvals` `/v1/attestations` `/v1/artifacts` | ✅ |
 | POST | `/v1/runs/:id/finalize` | ✅ |
-| GET | `/v1/agents` `/v1/agents/:id` `/v1/agents/:id/runs` | — |
-| GET | `/v1/runs` `/v1/runs/:id` `/v1/runs/:id/receipt` | — |
+| GET | `/v1/agents` `/v1/agents/:id` `/v1/agents/:id/runs` | - |
+| GET | `/v1/runs` `/v1/runs/:id` `/v1/runs/:id/receipt` | - |
 
 Full reference: [`docs/api.md`](docs/api.md).
 
 ## Docs
 
-- [`docs/architecture.md`](docs/architecture.md) — components, data model, lifecycle
-- [`docs/receipts.md`](docs/receipts.md) — determinism, signing, verification
-- [`docs/api.md`](docs/api.md) — endpoint reference
-- [`docs/security-checklist.md`](docs/security-checklist.md) — security baseline for agent integrations
+- [`docs/architecture.md`](docs/architecture.md) - components, data model, lifecycle
+- [`docs/receipts.md`](docs/receipts.md) - determinism, signing, verification
+- [`docs/api.md`](docs/api.md) - endpoint reference
+- [`docs/security-checklist.md`](docs/security-checklist.md) - security baseline for agent integrations
 
 ## v0 boundaries
 

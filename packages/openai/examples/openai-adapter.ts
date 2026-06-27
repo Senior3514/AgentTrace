@@ -3,7 +3,7 @@
 //
 //   AGENTTRACE_API_URL   (default http://localhost:4000)
 //   AGENTTRACE_API_KEY   (default dev_key_local)
-//   OPENAI_API_KEY       (optional) — if set, calls the real OpenAI API;
+//   OPENAI_API_KEY       (optional) - if set, calls the real OpenAI API;
 //                        otherwise a recorded fixture response is used.
 //
 // In BOTH modes the AgentTrace run, events, finalize, receipt and verification

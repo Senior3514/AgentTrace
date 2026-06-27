@@ -4,8 +4,8 @@ Base URL: `http://localhost:4000`. JSON in/out. Writes require an API key via
 `Authorization: Bearer <key>` or `x-api-key: <key>`.
 
 Two key types are accepted:
-- **Global/admin keys** — configured via `API_KEYS` (bootstrap, not tenant-scoped).
-- **Per-owner keys** — minted via `POST /v1/owners/:id/api-keys`; the plaintext
+- **Global/admin keys** - configured via `API_KEYS` (bootstrap, not tenant-scoped).
+- **Per-owner keys** - minted via `POST /v1/owners/:id/api-keys`; the plaintext
   is returned exactly once and only its SHA-256 hash is stored. Using one sets
   the request's owner scope and updates the key's `lastUsedAt` (usage audit).
 

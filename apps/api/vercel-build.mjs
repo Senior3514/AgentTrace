@@ -1,7 +1,7 @@
 // Bundle the Vercel serverless handler with esbuild.
 //
 // Only the workspace package @agenttrace/shared (TypeScript source) is inlined.
-// Everything else — fastify, @prisma/client, zod, node builtins — stays external
+// Everything else - fastify, @prisma/client, zod, node builtins - stays external
 // and is required normally from node_modules at runtime. This avoids Vercel's
 // builder having to resolve TS sources or package `exports`, which produced
 // TS2305/TS2339 errors on a raw .ts function.

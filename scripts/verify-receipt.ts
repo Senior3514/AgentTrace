@@ -1,7 +1,7 @@
 // Offline receipt verifier.
 //
 // Verifies an AgentTrace receipt with no server, no database, and no private
-// key — only the receipt JSON itself. Exit code 0 when valid, 1 otherwise.
+// key - only the receipt JSON itself. Exit code 0 when valid, 1 otherwise.
 //
 // Usage:
 //   pnpm verify:receipt path/to/receipt.json

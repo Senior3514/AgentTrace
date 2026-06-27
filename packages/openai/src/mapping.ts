@@ -1,5 +1,5 @@
 // Deterministic mapping from OpenAI Chat Completions responses to AgentTrace
-// events. Pure functions only — no I/O, no clock, no randomness — so the
+// events. Pure functions only - no I/O, no clock, no randomness - so the
 // OpenAI-side mapping is fully unit-testable offline with recorded fixtures.
 
 import type { ActionClass } from "@agenttrace/shared";
